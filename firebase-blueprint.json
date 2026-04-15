@@ -1,0 +1,92 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores personal information, CV, and social links.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique ID of the user." },
+        "displayName": { "type": "string", "description": "Full name of the user." },
+        "email": { "type": "string", "format": "email", "description": "Email address." },
+        "bio": { "type": "string", "description": "A short biography." },
+        "cvUrl": { "type": "string", "format": "uri", "description": "URL to the user's CV/Resume." },
+        "profileImageUrl": { "type": "string", "format": "uri", "description": "URL to the profile picture." },
+        "socialLinks": {
+          "type": "object",
+          "description": "Map of social media platform names to URLs.",
+          "properties": {
+            "github": { "type": "string", "format": "uri" },
+            "linkedin": { "type": "string", "format": "uri" },
+            "twitter": { "type": "string", "format": "uri" },
+            "portfolio": { "type": "string", "format": "uri" }
+          }
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "email"]
+    },
+    "PortfolioItem": {
+      "title": "Portfolio Item",
+      "description": "Represents a project or work in the portfolio.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "projectUrl": { "type": "string", "format": "uri" },
+        "category": { "type": "string", "enum": ["web", "design", "video", "other"] },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "authorUid": { "type": "string" }
+      },
+      "required": ["title", "imageUrl", "authorUid"]
+    },
+    "GalleryItem": {
+      "title": "Gallery Item",
+      "description": "A photo, video, or GIF in the media gallery.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "mediaUrl": { "type": "string", "format": "uri" },
+        "mediaType": { "type": "string", "enum": ["photo", "video", "gif"] },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "authorUid": { "type": "string" }
+      },
+      "required": ["mediaUrl", "mediaType", "authorUid"]
+    },
+    "Asset": {
+      "title": "Asset",
+      "description": "Reusable icons, SVGs, or other design assets.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "content": { "type": "string", "description": "SVG code or asset description." },
+        "category": { "type": "string", "enum": ["icon", "svg", "logo"] },
+        "authorUid": { "type": "string" }
+      },
+      "required": ["name", "content", "authorUid"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "Private user profile data."
+    },
+    "/portfolio": {
+      "schema": "PortfolioItem",
+      "description": "Collection of portfolio projects."
+    },
+    "/gallery": {
+      "schema": "GalleryItem",
+      "description": "Collection of gallery media."
+    },
+    "/assets": {
+      "schema": "Asset",
+      "description": "Collection of design assets."
+    }
+  }
+}

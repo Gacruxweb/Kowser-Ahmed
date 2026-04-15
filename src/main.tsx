@@ -3,12 +3,15 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { FirebaseProvider } from './components/FirebaseProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <TooltipProvider>
-      <App />
-    </TooltipProvider>
+    <FirebaseProvider>
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
+    </FirebaseProvider>
   </StrictMode>,
 );
 

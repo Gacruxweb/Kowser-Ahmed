@@ -51,7 +51,7 @@ export const BootScreen: React.FC = () => {
         <h2 className="text-white text-3xl font-bold italic tracking-tighter">
           Portfolio<span className="text-xs align-top ml-0.5">®</span>
         </h2>
-        <p className="text-white/40 text-[10px] uppercase tracking-widest mt-1">Loading Page</p>
+        <p className="text-white/40 text-[10px] uppercase tracking-widest mt-1">Windows XP loading...</p>
       </div>
     </div>
   );

@@ -1,0 +1,157 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: /users/{uid}
+// Fields:
+//   - uid: string (required)
+//   - displayName: string (required, 1-100 chars)
+//   - email: string (required, email format)
+//   - bio: string (optional, < 500 chars)
+//   - cvUrl: string (optional, URL format)
+//   - profileImageUrl: string (optional, URL format)
+//   - socialLinks: map (optional)
+//   - updatedAt: timestamp (required)
+//
+// Collection: /portfolio/{itemId}
+// Fields:
+//   - title: string (required, 1-100 chars)
+//   - description: string (optional, < 1000 chars)
+//   - imageUrl: string (required, URL format)
+//   - projectUrl: string (optional, URL format)
+//   - category: string (required, enum: web, design, video, other)
+//   - tags: list (optional, strings < 30 chars, max 10 tags)
+//   - authorUid: string (required)
+//   - createdAt: timestamp (required)
+//
+// Collection: /gallery/{itemId}
+// Fields:
+//   - title: string (optional, < 100 chars)
+//   - mediaUrl: string (required, URL format)
+//   - mediaType: string (required, enum: photo, video, gif)
+//   - tags: list (optional)
+//   - authorUid: string (required)
+//   - createdAt: timestamp (required)
+//
+// Collection: /assets/{itemId}
+// Fields:
+//   - name: string (required)
+//   - content: string (required, < 10000 chars)
+//   - category: string (required, enum: icon, svg, logo)
+//   - authorUid: string (required)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "kowserahmed777@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'email', 'updatedAt']) &&
+             data.uid == request.auth.uid &&
+             data.displayName is string && data.displayName.size() > 0 && data.displayName.size() <= 100 &&
+             isValidEmail(data.email) &&
+             (!('bio' in data) || (data.bio is string && data.bio.size() <= 500)) &&
+             (!('cvUrl' in data) || isValidUrl(data.cvUrl)) &&
+             (!('profileImageUrl' in data) || isValidUrl(data.profileImageUrl));
+    }
+
+    function isValidPortfolioItem(data) {
+      return data.keys().hasAll(['title', 'imageUrl', 'category', 'authorUid', 'createdAt']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 100 &&
+             isValidUrl(data.imageUrl) &&
+             data.category in ['web', 'design', 'video', 'other'] &&
+             data.authorUid == request.auth.uid &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 1000)) &&
+             (!('projectUrl' in data) || isValidUrl(data.projectUrl)) &&
+             (!('tags' in data) || (data.tags is list && data.tags.size() <= 10));
+    }
+
+    function isValidGalleryItem(data) {
+      return data.keys().hasAll(['mediaUrl', 'mediaType', 'authorUid', 'createdAt']) &&
+             isValidUrl(data.mediaUrl) &&
+             data.mediaType in ['photo', 'video', 'gif'] &&
+             data.authorUid == request.auth.uid &&
+             (!('title' in data) || (data.title is string && data.title.size() <= 100));
+    }
+
+    function isValidAsset(data) {
+      return data.keys().hasAll(['name', 'content', 'category', 'authorUid']) &&
+             data.name is string && data.name.size() > 0 &&
+             data.content is string && data.content.size() <= 10000 &&
+             data.category in ['icon', 'svg', 'logo'] &&
+             data.authorUid == request.auth.uid;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                    request.resource.data.uid == resource.data.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /portfolio/{itemId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidPortfolioItem(request.resource.data);
+      allow update: if isAdmin() && isValidPortfolioItem(request.resource.data) &&
+                    request.resource.data.authorUid == resource.data.authorUid;
+      allow delete: if isAdmin();
+    }
+
+    match /gallery/{itemId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidGalleryItem(request.resource.data);
+      allow update: if isAdmin() && isValidGalleryItem(request.resource.data) &&
+                    request.resource.data.authorUid == resource.data.authorUid;
+      allow delete: if isAdmin();
+    }
+
+    match /assets/{itemId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidAsset(request.resource.data);
+      allow update: if isAdmin() && isValidAsset(request.resource.data) &&
+                    request.resource.data.authorUid == resource.data.authorUid;
+      allow delete: if isAdmin();
+    }
+
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

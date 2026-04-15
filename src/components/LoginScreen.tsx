@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Power } from 'lucide-react';
 import { WindowsLogo } from './WindowsLogo';
+import { UserAvatar } from './UserAvatar';
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -42,17 +43,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
           {/* Right Side: User Profile */}
           <motion.button
-            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onLogin}
-            className="flex items-center gap-4 p-2 rounded-lg hover:bg-white/10 transition-colors group"
+            className="flex items-center gap-4 p-2 pr-8 rounded-lg hover:bg-gradient-to-r hover:from-[#1d4ed8] hover:to-[#1e3a8a] transition-all group"
           >
-            <div className="w-20 h-20 rounded-md border-2 border-white/40 overflow-hidden shadow-lg group-hover:border-white transition-colors">
-              <img 
-                src="https://storage.googleapis.com/static.miraidemo.com/applet-assets/88a4ad42-ea13-4bdf-8ad4-51d031cd1f98/08643888-0062-4638-89c0-67210e39540c.png" 
-                alt="Kowser Ahmed" 
-                className="w-full h-full object-cover"
-              />
+            <div className="w-20 h-20 rounded-md overflow-hidden shadow-lg transition-colors flex items-center justify-center">
+              <UserAvatar className="w-full h-full object-cover text-white border-none" />
             </div>
             <div className="text-left">
               <h2 className="text-white text-2xl font-semibold">Kowser Ahmed</h2>

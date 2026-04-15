@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, Power, User, Moon, RotateCcw, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { WindowType } from '@/src/types';
+import { UserAvatar } from './UserAvatar';
 
 interface StartMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onAppClick: (id: WindowType) => void;
-  onPowerAction: (action: 'sleep' | 'restart' | 'shutdown') => void;
+  onPowerAction: (action: 'sleep' | 'restart' | 'shutdown' | 'logout') => void;
 }
 
 export const StartMenu: React.FC<StartMenuProps> = ({
@@ -43,12 +44,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({
           >
             {/* Header */}
             <div className="h-16 xp-title-bar flex items-center px-4 gap-3 border-b border-white/20">
-              <div className="w-10 h-10 rounded-md border-2 border-white/40 overflow-hidden shadow-md">
-                <img 
-                  src="https://storage.googleapis.com/static.miraidemo.com/applet-assets/88a4ad42-ea13-4bdf-8ad4-51d031cd1f98/08643888-0062-4638-89c0-67210e39540c.png" 
-                  alt="Kowser Ahmed" 
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-10 h-10 rounded-md overflow-hidden shadow-md flex items-center justify-center">
+                <UserAvatar className="w-full h-full object-cover text-white border-none" />
               </div>
               <span className="text-white font-bold text-lg drop-shadow-md">Kowser Ahmed</span>
             </div>
@@ -117,7 +114,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({
             <div className="h-12 xp-taskbar flex items-center justify-end px-4 gap-4 border-t border-white/20">
               <div className="relative">
                 <button 
-                  onClick={() => setIsPowerMenuOpen(!isPowerMenuOpen)}
+                  onClick={() => onPowerAction('logout')}
                   className="flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition-colors text-white"
                 >
                   <div className="w-6 h-6 bg-orange-500 rounded flex items-center justify-center shadow-sm">

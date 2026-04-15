@@ -12,19 +12,21 @@ import { Contact } from './components/apps/Contact';
 import { Settings as SettingsApp } from './components/apps/Settings';
 import { LoginScreen } from './components/LoginScreen';
 import { BootScreen } from './components/BootScreen';
+import { WelcomeScreen } from './components/WelcomeScreen';
 import { User, Briefcase, Code, Mail, Settings, Power } from 'lucide-react';
 
 export default function App() {
   const [isBooting, setIsBooting] = useState(true);
+  const [isWelcoming, setIsWelcoming] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSleeping, setIsSleeping] = useState(false);
   const [isShutDown, setIsShutDown] = useState(false);
-  
+
   useEffect(() => {
     if (isBooting) {
       const timer = setTimeout(() => {
         setIsBooting(false);
-      }, 10000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [isBooting]);
@@ -82,7 +84,7 @@ export default function App() {
     }
   };
 
-  const handlePowerAction = (action: 'sleep' | 'restart' | 'shutdown') => {
+  const handlePowerAction = async (action: 'sleep' | 'restart' | 'shutdown' | 'logout') => {
     if (action === 'sleep') {
       setIsSleeping(true);
     } else if (action === 'restart') {
@@ -91,6 +93,9 @@ export default function App() {
       setWindows(prev => prev.map(w => ({ ...w, isOpen: w.id === 'about', isMinimized: false, isMaximized: false })));
     } else if (action === 'shutdown') {
       setIsShutDown(true);
+    } else if (action === 'logout') {
+      setIsLoggedIn(false);
+      setIsStartOpen(false);
     }
   };
 
@@ -116,7 +121,7 @@ export default function App() {
           onClick={() => setIsSleeping(false)}
         />
       )}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isBooting ? (
           <motion.div
             key="boot"
@@ -127,6 +132,17 @@ export default function App() {
           >
             <BootScreen />
           </motion.div>
+        ) : isWelcoming ? (
+          <motion.div
+            key="welcome"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-[2500]"
+          >
+            <WelcomeScreen onComplete={() => { setIsLoggedIn(true); setIsWelcoming(false); }} />
+          </motion.div>
         ) : !isLoggedIn ? (
           <motion.div
             key="login"
@@ -136,12 +152,12 @@ export default function App() {
             transition={{ duration: 0.5 }}
             className="fixed inset-0 z-[2000]"
           >
-            <LoginScreen onLogin={() => setIsLoggedIn(true)} />
+            <LoginScreen onLogin={() => setIsWelcoming(true)} />
           </motion.div>
         ) : null}
       </AnimatePresence>
 
-      {isLoggedIn && !isBooting && (
+      {isLoggedIn && !isBooting && !isWelcoming && (
         <div className="relative w-screen h-screen desktop-bg overflow-hidden font-sans">
           {/* Grid Overlay (Mesh Style) */}
           <div className="absolute inset-0 pointer-events-none opacity-[0.1] z-0" style={{ backgroundImage: 'linear-gradient(rgba(0, 50, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 50, 255, 0.3) 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
