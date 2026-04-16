@@ -13,6 +13,8 @@ import { Settings as SettingsApp } from './components/apps/Settings';
 import { LoginScreen } from './components/LoginScreen';
 import { BootScreen } from './components/BootScreen';
 import { WelcomeScreen } from './components/WelcomeScreen';
+import { HeroBackground } from './components/HeroBackground';
+import './styles/theme.css';
 import { User, Briefcase, Code, Mail, Settings, Power } from 'lucide-react';
 
 export default function App() {
@@ -90,6 +92,7 @@ export default function App() {
     } else if (action === 'restart') {
       setIsBooting(true);
       setIsLoggedIn(false);
+      setIsWelcoming(false);
       setWindows(prev => prev.map(w => ({ ...w, isOpen: w.id === 'about', isMinimized: false, isMaximized: false })));
     } else if (action === 'shutdown') {
       setIsShutDown(true);
@@ -104,7 +107,7 @@ export default function App() {
       <div className="fixed inset-0 bg-black flex items-center justify-center z-[5000]">
         <button 
           onClick={() => { setIsShutDown(false); setIsBooting(true); }}
-          className="p-4 rounded-full bg-zinc-800 hover:bg-zinc-700 transition-colors text-white flex flex-col items-center gap-2"
+          className="w-[108px] h-[108px] rounded-full bg-zinc-800 hover:bg-zinc-700 transition-colors text-white flex flex-col items-center justify-center gap-2"
         >
           <Power size={48} />
           <span className="text-sm font-medium">Power On</span>
@@ -121,13 +124,13 @@ export default function App() {
           onClick={() => setIsSleeping(false)}
         />
       )}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {isBooting ? (
           <motion.div
             key="boot"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[3000]"
           >
             <BootScreen />
@@ -138,7 +141,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[2500]"
           >
             <WelcomeScreen onComplete={() => { setIsLoggedIn(true); setIsWelcoming(false); }} />
@@ -148,24 +151,30 @@ export default function App() {
             key="login"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: -100 }}
-            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[2000]"
           >
-            <LoginScreen onLogin={() => setIsWelcoming(true)} />
+            <LoginScreen 
+              onLogin={() => setIsWelcoming(true)} 
+              onPowerAction={(action) => handlePowerAction(action)}
+            />
           </motion.div>
         ) : null}
       </AnimatePresence>
 
       {isLoggedIn && !isBooting && !isWelcoming && (
-        <div className="relative w-screen h-screen desktop-bg overflow-hidden font-sans">
-          {/* Grid Overlay (Mesh Style) */}
-          <div className="absolute inset-0 pointer-events-none opacity-[0.1] z-0" style={{ backgroundImage: 'linear-gradient(rgba(0, 50, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 50, 255, 0.3) 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
+        <div className="relative w-screen h-screen overflow-hidden font-sans bg-background">
+          {/* Cinematic Hero Background */}
+          <HeroBackground />
+          
+          {/* Grid Overlay (Mesh Style) - Reduced opacity to not clash with video */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.05] z-[5]" style={{ backgroundImage: 'linear-gradient(rgba(0, 50, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 50, 255, 0.3) 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
           
           {/* Desktop Icons */}
           <div className="absolute inset-0 p-5 grid grid-cols-[repeat(1,80px)] grid-rows-[repeat(auto-fill,90px)] grid-flow-col gap-[10px] z-1">
             <div className="absolute top-4 right-6 pointer-events-none">
-              <p className="text-white/30 text-[10px] uppercase tracking-[0.2em] font-bold">Homepage</p>
+              <p className="text-white/30 text-[10px] uppercase tracking-[0.2em] font-bold">Kowser Ahmed</p>
             </div>
             <DesktopIcon 
               name="About Me" 

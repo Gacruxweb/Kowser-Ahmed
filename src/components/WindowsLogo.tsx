@@ -3,9 +3,10 @@ import React from 'react';
 interface WindowsLogoProps {
   className?: string;
   size?: number;
+  style?: React.CSSProperties;
 }
 
-export const WindowsLogo: React.FC<WindowsLogoProps> = ({ className, size = 100 }) => {
+export const WindowsLogo: React.FC<WindowsLogoProps> = ({ className, size = 100, style }) => {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -13,6 +14,7 @@ export const WindowsLogo: React.FC<WindowsLogoProps> = ({ className, size = 100 
       height={size} 
       viewBox="12 -12 48 48"
       className={className}
+      style={style}
     >
       <path fill="#03a9f4" d="M34.807,12.511l-3.488,12.077c-3.03-2.052-6.327-3.744-13.318-0.83l3.408-11.945l0.041-0.019C28.414,8.908,31.787,10.447,34.807,12.511z"></path>
       <path fill="#ffc107" d="M36.633,13.68l-3.447,11.943c3.028,2.069,6.383,3.718,13.365,0.805l3.324-11.643C42.76,17.24,39.66,15.731,36.633,13.68z"></path>

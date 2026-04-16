@@ -21,16 +21,16 @@ export const BootScreen: React.FC = () => {
           <WindowsLogo size={128} className="mb-4" />
           <div className="text-center">
             <h1 className="text-white text-6xl font-bold tracking-tight leading-none">
-              Kowser Ahmed<span className="text-orange-500 text-3xl align-top ml-1">xp</span>
+              Kowser Ahmed
             </h1>
             <p className="text-white italic text-xl mt-2">Visual Designer</p>
           </div>
         </div>
 
         {/* Loading Bar */}
-        <div className="w-64 h-4 border-2 border-zinc-500 rounded-md p-0.5 relative overflow-hidden">
+        <div className="w-64 h-[24px] border-2 border-zinc-500 rounded-[8px] p-0.5 relative overflow-hidden">
           <motion.div 
-            className="flex gap-1 h-full"
+            className="flex gap-1 h-full rounded-[8px]"
             animate={{ x: [-50, 250] }}
             transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
           >
@@ -51,7 +51,7 @@ export const BootScreen: React.FC = () => {
         <h2 className="text-white text-3xl font-bold italic tracking-tighter">
           Portfolio<span className="text-xs align-top ml-0.5">®</span>
         </h2>
-        <p className="text-white/40 text-[10px] uppercase tracking-widest mt-1">Windows XP loading...</p>
+        <p className="text-white/40 text-[10px] uppercase tracking-widest mt-1">Kowser Ahmed loading...</p>
       </div>
     </div>
   );
