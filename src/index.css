@@ -128,8 +128,8 @@
 @layer utilities {
   .xp-title-bar {
     background: linear-gradient(to bottom, #5a7edc 0%, #245edb 10%, #245edb 90%, #1941a5 100%);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
   }
   
@@ -179,6 +179,30 @@
   }
   .animate-spin-slow {
     animation: spin-slow 3s linear infinite;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1e3;
+    border: 1px solid #d3d3d3;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border: 1px solid #ffffff;
+    box-shadow: inset -1px -1px 0px rgba(0,0,0,0.2), inset 1px 1px 0px rgba(255,255,255,0.8);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-button {
+    background: #c0c0c0;
+    border: 1px solid #ffffff;
+    box-shadow: inset -1px -1px 0px rgba(0,0,0,0.2), inset 1px 1px 0px rgba(255,255,255,0.8);
+    width: 16px;
+    height: 16px;
   }
 }
 

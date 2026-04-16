@@ -22,7 +22,11 @@ import {
   Image as ImageIcon, 
   FileText,
   ChevronRight,
-  Key
+  Key,
+  MessageSquare,
+  Mail,
+  Gamepad2,
+  Facebook
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { WindowType } from '@/src/types';
@@ -43,25 +47,29 @@ export const StartMenu: React.FC<StartMenuProps> = ({
 }) => {
   const [isPowerMenuOpen, setIsPowerMenuOpen] = useState(false);
 
-  const leftApps: { id: string; name: string; subtitle?: string; icon: React.ReactNode; color: string }[] = [
-    { id: 'projects', name: 'My Projects', subtitle: 'View my work', icon: <Globe className="text-blue-500" size={24} />, color: 'text-blue-600' },
-    { id: 'contact', name: 'Contact Me', subtitle: 'Send me a message', icon: <RefreshCw className="text-blue-400" size={24} />, color: 'text-blue-600' },
-    { id: 'about', name: 'About Me', icon: <Compass className="text-orange-500" size={24} />, color: 'text-blue-600' },
+  const leftApps: { id: string; name: string; subtitle?: string; icon: React.ReactNode; color: string; hasArrow?: boolean }[] = [
+    { id: 'projects', name: 'My Projects', subtitle: 'View my work', icon: <img src="https://icons.iconarchive.com/icons/aha-soft/travel/128/globe-icon.png" alt="My Projects" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />, color: 'text-blue-600' },
+    { id: 'contact', name: 'Contact Me', subtitle: 'Send me a message', icon: <img src="https://icons.iconarchive.com/icons/icons-land/vista-hardware-devices/128/Smartphone-icon.png" alt="Contact Me" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />, color: 'text-blue-600' },
+    { id: 'about', name: 'About Me', icon: <img src="https://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/128/Actions-help-about-icon.png" alt="About Me" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />, color: 'text-blue-600' },
     { id: 'music', name: 'Music Player', icon: <Music className="text-zinc-600" size={24} />, color: 'text-blue-600' },
     { id: 'media', name: 'Media Player', icon: <PlayCircle className="text-blue-600" size={24} />, color: 'text-blue-600' },
     { id: 'paint', name: 'Paint', icon: <Palette className="text-red-500" size={24} />, color: 'text-blue-600' },
     { id: 'doodle', name: 'DoodleDev', icon: <Code2 className="text-green-600" size={24} />, color: 'text-blue-600' },
+    { id: 'games', name: 'Games', icon: <Gamepad2 className="text-purple-600" size={24} />, color: 'text-blue-600', hasArrow: true },
   ];
 
   const rightApps = [
+    { id: 'facebook', name: 'Facebook', icon: <Facebook className="text-blue-600" size={18} /> },
     { id: 'instagram', name: 'Instagram', icon: <Instagram className="text-pink-600" size={18} /> },
     { id: 'github', name: 'Github', icon: <Github className="text-zinc-900" size={18} /> },
     { id: 'linkedin', name: 'LinkedIn', icon: <Linkedin className="text-blue-700" size={18} /> },
+    { id: 'whatsapp', name: 'WhatsApp', icon: <MessageSquare className="text-green-500" size={18} /> },
+    { id: 'email', name: 'Email', icon: <Mail className="text-blue-500" size={18} /> },
     { type: 'separator' },
     { id: 'recent', name: 'Recently Used', icon: <Clock className="text-zinc-500" size={18} />, hasArrow: true },
     { id: 'cmd', name: 'Command Prompt', icon: <Terminal className="text-zinc-800" size={18} /> },
     { id: 'viewer', name: 'Image Viewer', icon: <ImageIcon className="text-emerald-600" size={18} /> },
-    { id: 'resume', name: 'My Resume', icon: <FileText className="text-red-500" size={18} /> },
+    { id: 'resume', name: 'My Resume', icon: <img src="https://icons.iconarchive.com/icons/aha-soft/standard-portfolio/128/Resume-icon.png" alt="My Resume" className="w-[18px] h-[18px] object-contain" referrerPolicy="no-referrer" /> },
   ];
 
   return (
@@ -100,22 +108,18 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                         }
                         onClose(); 
                       }}
-                      className={cn(
-                        "flex items-center gap-3 hover:bg-[#316ac5] hover:text-white transition-colors group rounded-sm text-left",
-                        index === 0 ? "pl-2 py-1 pr-2" : 
-                        index === 1 ? "py-1 pl-[9px] pr-2" : 
-                        "py-1 px-2"
-                      )}
+                      className="flex items-center gap-3 hover:bg-[#316ac5] hover:text-white transition-colors group rounded-sm text-left py-[2px] px-2"
                     >
                       <div className="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-transform">
                         {app.icon}
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col flex-1">
                         <span className="text-[13px] font-bold leading-tight">{app.name}</span>
                         {app.subtitle && (
                           <span className="text-[11px] opacity-60 group-hover:text-white/80 leading-tight">{app.subtitle}</span>
                         )}
                       </div>
+                      {app.hasArrow && <ChevronRight size={12} className="opacity-60 group-hover:text-white" />}
                     </button>
                   ))}
                 </div>

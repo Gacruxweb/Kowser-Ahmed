@@ -32,17 +32,18 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
       animate={{ 
         opacity: 1, 
         scale: 1, 
-        y: 0,
-        width: window.isMaximized ? '100vw' : '80vw',
-        height: window.isMaximized ? 'calc(100vh - 48px)' : '70vh',
+        x: window.isMaximized ? 0 : undefined,
+        y: window.isMaximized ? 0 : 0,
+        width: window.isMaximized ? '100vw' : '840px',
+        height: window.isMaximized ? 'calc(100vh - 30px)' : '70vh',
         top: window.isMaximized ? 0 : '10%',
-        left: window.isMaximized ? 0 : '10%',
+        left: window.isMaximized ? 0 : 'calc(50% - 420px)',
       }}
       exit={{ opacity: 0, scale: 0.95, y: 20 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       className={cn(
-        "fixed xp-window flex flex-col",
-        window.isMaximized ? "z-[100]" : ""
+        "fixed xp-window flex flex-col rounded-[9px]",
+        window.isMaximized ? "z-[100] rounded-none" : ""
       )}
       style={{ zIndex: window.zIndex }}
       onMouseDown={onFocus}
