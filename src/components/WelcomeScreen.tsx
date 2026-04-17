@@ -25,7 +25,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
           className="absolute inset-0 opacity-20" 
           style={{ 
             backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', 
-            backgroundSize: '20px 20px' 
+            backgroundSize: '10px 10px' 
           }} 
         />
         

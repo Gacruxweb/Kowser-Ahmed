@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -6,60 +6,32 @@ import {
   Search, 
   Folder, 
   LayoutGrid, 
-  ChevronDown,
+  ChevronDown, 
   ExternalLink,
-  Laptop,
-  Github
+  Laptop
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppSidebar } from '../AppSidebar';
-import { WindowsLogo } from '../WindowsLogo';
+import { AppMenuBar } from '../AppMenuBar';
+import { WindowType } from '@/src/types';
+import { projects } from '@/src/projectsData';
+import { getGoogleDriveDirectUrl } from '@/src/lib/driveUtils';
 
-const projects = [
-  {
-    id: '1',
-    title: 'EcoTrack Mobile App',
-    description: 'A sustainable lifestyle tracking app helping users reduce their carbon footprint through gamified challenges.',
-    image: 'https://picsum.photos/seed/eco/800/600',
-    tags: ['UI Design', 'Mobile', 'Figma'],
-  },
-  {
-    id: '2',
-    title: 'Lumina Dashboard',
-    description: 'An enterprise-grade analytics dashboard for real-time monitoring of cloud infrastructure and costs.',
-    image: 'https://picsum.photos/seed/dashboard/800/600',
-    tags: ['UX Research', 'Dashboard', 'React'],
-  },
-  {
-    id: '3',
-    title: 'Zenith E-commerce',
-    description: 'A minimalist e-commerce platform for high-end furniture, focusing on high-quality imagery and smooth transitions.',
-    image: 'https://picsum.photos/seed/furniture/800/600',
-    tags: ['E-commerce', 'Web Design', 'Branding'],
-  },
-  {
-    id: '4',
-    title: 'Pulse Fitness Wearable',
-    description: 'Design system and interface for a next-gen fitness wearable focusing on heart health and sleep recovery.',
-    image: 'https://picsum.photos/seed/fitness/800/600',
-    tags: ['Design System', 'Wearable', 'Prototyping'],
-  }
-];
-
-export const Projects: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = false }) => {
+export const Projects: React.FC<{ 
+  isMaximized?: boolean; 
+  onOpenApp: (id: string) => void;
+  onOpenProject: (id: string, title: string) => void;
+  onContextMenu: (e: React.MouseEvent, id: string) => void;
+}> = ({ 
+  isMaximized = false,
+  onOpenApp,
+  onOpenProject,
+  onContextMenu
+}) => {
   return (
     <div className="flex flex-col h-full bg-white select-none font-sans text-[11px]">
       {/* Menu Bar */}
-      <div className="flex items-center px-1 py-0.5 bg-[#ece9d8] border-b border-white/40 gap-4">
-        {['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help'].map(item => (
-          <button key={item} className="px-2 py-0.5 hover:bg-[#316ac5] hover:text-white rounded-sm">
-            {item}
-          </button>
-        ))}
-        <div className="ml-auto pr-2">
-          <WindowsLogo size={16} className="opacity-50" />
-        </div>
-      </div>
+      <AppMenuBar currentAppId="projects" onOpenApp={onOpenApp} />
 
       {/* Toolbar */}
       <div className="flex items-center px-1 py-1 bg-[#ece9d8] border-b border-[#aca899] gap-1">
@@ -127,45 +99,67 @@ export const Projects: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = fa
         <AppSidebar />
 
         {/* Main Content */}
-        <div className="flex-1 bg-[#316ac5] relative overflow-y-auto custom-scrollbar">
-          {/* Mesh Background Pattern */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-          
-          <div className="relative p-10 max-w-5xl mx-auto flex flex-col gap-12">
-            <h1 className="text-5xl font-bold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] tracking-tight">
+        <div className="flex-1 bg-white relative overflow-y-auto custom-scrollbar">
+          <div className="relative p-8 md:p-12 max-w-[1200px] mx-auto flex flex-col gap-10">
+            <h1 className="font-extrabold text-[#2c3e50] tracking-tight border-b-2 border-blue-100 pb-4" style={{ fontSize: '24px', lineHeight: '22px', textDecorationLine: 'none', fontStyle: 'normal' }}>
               Featured Projects
             </h1>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-y-12 gap-x-4">
               {projects.map((project) => (
-                <div key={project.id} className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-2xl hover:border-blue-400/50 transition-all duration-300">
-                  <div className="aspect-video overflow-hidden relative">
-                    <img 
-                      src={project.image} 
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+                <div 
+                  key={project.id} 
+                  className="flex flex-col items-center group cursor-pointer"
+                  onDoubleClick={() => onOpenProject(project.id, project.title)}
+                  onContextMenu={(e) => onContextMenu(e, project.id)}
+                >
+                  {/* Windows Folder Design */}
+                  <div className="relative w-40 h-32 mb-4 group-hover:scale-110 transition-transform duration-300">
+                    {/* Folder Body (Back) */}
+                    <div className="absolute inset-0 bg-[#e7ae2a] rounded-xl shadow-md" style={{ borderRadius: '12px 12px 12px 12px' }} />
+                    
+                    {/* Folder Tab */}
+                    <div className="absolute -top-3 left-0 w-16 h-8 bg-[#e7ae2a]" style={{ borderRadius: '10px 20px 0 0' }} />
+                    
+                    {/* Folder Paper Content (The project image) */}
+                    <div className="absolute top-4 left-3 right-3 bottom-6 bg-white overflow-hidden shadow-inner border border-black/5" style={{ borderRadius: '2px' }}>
+                      <img 
+                        src={getGoogleDriveDirectUrl(project.image)} 
+                        alt="" 
+                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 grayscale-[0.3] group-hover:grayscale-0 transition-all"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+
+                    {/* Folder Front Flap */}
+                    <div className="absolute left-0 right-0 bottom-0 h-16 bg-[#fcc44e] rounded-b-xl border-t border-[#f9c34a] shadow-[0_-4px_8px_rgba(0,0,0,0.1)] flex items-end justify-center pb-2 px-2 overflow-hidden">
+                       {/* Subtle highlight */}
+                       <div className="absolute top-0 left-0 right-0 h-px bg-white/30" />
+                       <div className="text-[9px] text-black/40 font-bold uppercase tracking-tighter truncate w-full text-center">{project.id}</div>
+                    </div>
                   </div>
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-2xl font-bold text-white">{project.title}</h3>
-                    <p className="text-white/80 text-sm leading-relaxed">{project.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map(tag => (
-                        <span key={tag} className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30">
-                          {tag}
-                        </span>
-                      ))}
+
+                  {/* Project Info & Live Actions */}
+                  <div className="text-center w-full max-w-[160px] space-y-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                        <h3 className="text-sm font-bold text-gray-800 leading-none">{project.title}</h3>
+                        <a 
+                          href={project.liveLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1 text-[9px] font-black text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-widest bg-blue-50 px-1.5 py-0.5 rounded"
+                        >
+                          Live link
+                          <ExternalLink size={9} />
+                        </a>
+                      </div>
                     </div>
-                    <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-                      <button className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
-                        <Github size={18} />
-                      </button>
-                      <button className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
-                        <ExternalLink size={18} />
-                      </button>
-                    </div>
+
+                    <p className="text-gray-500 text-[10px] leading-tight line-clamp-2 px-1">
+                      {project.description}
+                    </p>
                   </div>
                 </div>
               ))}

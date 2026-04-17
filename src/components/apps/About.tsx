@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -7,27 +7,26 @@ import {
   Folder, 
   LayoutGrid, 
   ChevronDown,
-  Laptop
+  Laptop,
+  Facebook,
+  Github,
+  Linkedin,
+  MessageCircle,
+  Mail
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { AppSidebar } from '../AppSidebar';
-import { WindowsLogo } from '../WindowsLogo';
+import { AppMenuBar } from '../AppMenuBar';
+import { WindowType } from '@/src/types';
 
-export const About: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = false }) => {
+export const About: React.FC<{ isMaximized?: boolean; onOpenApp: (id: WindowType) => void }> = ({ 
+  isMaximized = false,
+  onOpenApp
+}) => {
 
   return (
     <div className="flex flex-col h-full bg-white select-none font-sans text-[11px]">
       {/* Menu Bar */}
-      <div className="flex items-center px-1 py-0.5 bg-[#ece9d8] border-b border-white/40 gap-4">
-        {['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help'].map(item => (
-          <button key={item} className="px-2 py-0.5 hover:bg-[#316ac5] hover:text-white rounded-sm">
-            {item}
-          </button>
-        ))}
-        <div className="ml-auto pr-2">
-          <WindowsLogo size={16} className="opacity-50" />
-        </div>
-      </div>
+      <AppMenuBar currentAppId="about" onOpenApp={onOpenApp} />
 
       {/* Toolbar */}
       <div className="flex items-center px-1 py-1 bg-[#ece9d8] border-b border-[#aca899] gap-1">
@@ -95,44 +94,94 @@ export const About: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = false
         <AppSidebar />
 
         {/* Main Content */}
-        <div className="flex-1 bg-[#316ac5] relative overflow-y-auto custom-scrollbar">
-          {/* Mesh Background Pattern */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-          
+        <div className="flex-1 bg-white relative overflow-y-auto custom-scrollbar">
           <div className="relative p-10 max-w-3xl mx-auto flex flex-col gap-12">
-            <h1 className="text-5xl font-bold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] tracking-tight">
+            <h1 className="font-bold text-[#003399] tracking-tight" style={{ fontSize: '24px', lineHeight: '22px', textDecorationLine: 'none', fontStyle: 'normal' }}>
               About Me
             </h1>
 
-            <div className="flex flex-col gap-16">
-              {/* Block 1 */}
-              <div className="flex gap-8 items-start">
-                <div className="w-24 h-24 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-white/20 shadow-xl">
-                  <img src="https://picsum.photos/seed/avatar1/200/200" alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                </div>
-                <div className="flex-1 text-white/90 text-lg leading-relaxed font-medium drop-shadow-sm">
-                  I'm Kowser Ahmed, a designer based in Asia. Originally from a creative background, I've spent years honing my skills in digital product design and interactive experiences. I believe in the power of design to not only solve problems but to evoke emotions and create lasting impressions.
+            <div className="flex flex-col gap-8 text-black text-[15px] leading-relaxed px-4">
+              <p className="font-medium">
+                I’m Kowser Ahmed, a UI/UX designer dedicated to building digital experiences that feel as good as they look. For the past 4+ years, I’ve been turning complex problems into user-friendly interfaces, focusing on SaaS platforms, eCommerce systems, and enterprise dashboards.
+              </p>
+
+              <div>
+                <h3 className="text-lg font-bold text-[#003399] mb-2">Expertise & Achievements:</h3>
+                <div className="space-y-4">
+                  <p>
+                    My background is rooted in post graduation in Accounting from National University, Bangladesh, combined with hands on industry experience as a Senior User Experience Designer at Siegecode (Remote). Over the years, I’ve collaborated with organizations like Siegecode Inc., A2Z Web, and various international clients, delivering impactful design solutions across multiple domains.
+                  </p>
+                  <p className="font-bold">
+                    I specialize in designing complex, scalable systems, including multi-vendor eCommerce platforms, super shop management systems, warehouse management systems, human resource management (HRM) systems, accounts and asset management systems, and restaurant management systems. In addition to product design, I’ve also contributed to personal and company brand building, ensuring consistent and user focused digital presence.
+                  </p>
+                  <p>
+                    My work focuses on simplifying complexity translating business requirements into intuitive user experiences that improve usability, efficiency, and overall product performance. Whether I’m wireframing in Figma or conducting in depth user research, my goal remains the same: making digital products more meaningful and easier to use
+                  </p>
                 </div>
               </div>
 
-              {/* Block 2 */}
-              <div className="flex gap-8 items-start">
-                <div className="w-24 h-24 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-white/20 shadow-xl">
-                  <img src="https://picsum.photos/seed/avatar2/200/200" alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                </div>
-                <div className="flex-1 text-white/90 text-lg leading-relaxed font-medium drop-shadow-sm">
-                  My journey in design has been driven by a curiosity for how things work and a passion for aesthetics. Whether it's crafting a complex UI system or a simple brand identity, I approach every project with the same level of dedication and attention to detail. I'm constantly learning and evolving with the digital landscape.
-                </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#003399] mb-2">Passion & Values:</h3>
+                <p>
+                  I believe that great design isn’t just about aesthetics; it’s about empathy. I’m passionate about user centered design, accessibility, and clean minimal interfaces, ensuring that every product I touch is inclusive and accessible to everyone.
+                </p>
               </div>
 
-              {/* Block 3 */}
-              <div className="flex gap-8 items-start">
-                <div className="w-24 h-24 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-white/20 shadow-xl">
-                  <img src="https://picsum.photos/seed/avatar3/200/200" alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                </div>
-                <div className="flex-1 text-white/90 text-lg leading-relaxed font-medium drop-shadow-sm">
-                  I've always been interested in how things are built as much as how they look. This led me to explore the intersection of design and technology, where I can bring my creative visions to life through code. I enjoy the challenge of creating seamless, user-friendly experiences that push the boundaries of what's possible on the web.
-                </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#003399] mb-2">Process & Approach:</h3>
+                <p>
+                  I don’t just jump into high fidelity mockups. My process starts with asking “why,” understanding business goals, and sketching low fidelity ideas before moving into design. I’m a big believer in iterative testing I’d rather break a prototype early than launch a product that doesn’t solve the user's pain points.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-[#003399] mb-2">Personal Touch:</h3>
+                <p>
+                  When I’m not pushing pixels, you can usually find me exploring new design trends, experimenting with AI driven design tools, or working on creative side projects. My love for AI and design innovation actually influences my design work it teaches me efficiency, adaptability, and forward thinking problem solving.
+                </p>
+              </div>
+
+              <p className="mt-4 italic text-black font-medium">
+                I’m currently open to freelance projects and full time remote opportunities. If you have a project in mind or just want to chat about design, I’d love to hear from you!
+              </p>
+
+              {/* Social Media Links in a line */}
+              <div className="pt-8 border-t border-zinc-200 flex items-center gap-6">
+                <button 
+                  onClick={() => window.open("https://www.facebook.com/kowser.monob.kongkal/", "_blank")}
+                  className="flex items-center gap-2 hover:text-blue-600 transition-colors group text-[#003399]"
+                >
+                  <Facebook size={18} className="text-[#1877f2]" />
+                  <span className="font-bold text-sm">Facebook</span>
+                </button>
+                <button 
+                  onClick={() => window.open("https://github.com/Gacruxweb", "_blank")}
+                  className="flex items-center gap-2 hover:text-black transition-colors group text-[#003399]"
+                >
+                  <Github size={18} className="text-zinc-900" />
+                  <span className="font-bold text-sm">GitHub</span>
+                </button>
+                <button 
+                  onClick={() => window.open("https://www.linkedin.com/in/ahmed-kowser", "_blank")}
+                  className="flex items-center gap-2 hover:text-blue-700 transition-colors group text-[#003399]"
+                >
+                  <Linkedin size={18} className="text-[#0a66c2]" />
+                  <span className="font-bold text-sm">LinkedIn</span>
+                </button>
+                <button 
+                  onClick={() => window.open("https://wa.me/+8801703220977", "_blank")}
+                  className="flex items-center gap-2 hover:text-green-600 transition-colors group text-[#003399]"
+                >
+                  <MessageCircle size={18} className="text-green-500" />
+                  <span className="font-bold text-sm">WhatsApp</span>
+                </button>
+                <button 
+                  onClick={() => window.location.href = "mailto:ahmedimteyajkowser@gmail.com"}
+                  className="flex items-center gap-2 hover:text-red-600 transition-colors group text-[#003399]"
+                >
+                  <Mail size={18} className="text-red-500" />
+                  <span className="font-bold text-sm">Email</span>
+                </button>
               </div>
             </div>
           </div>

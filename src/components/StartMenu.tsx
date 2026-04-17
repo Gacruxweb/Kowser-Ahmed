@@ -35,7 +35,7 @@ import { UserAvatar } from './UserAvatar';
 interface StartMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  onAppClick: (id: WindowType) => void;
+  onAppClick: (id: string) => void;
   onPowerAction: (action: 'sleep' | 'restart' | 'shutdown' | 'logout') => void;
 }
 
@@ -54,22 +54,70 @@ export const StartMenu: React.FC<StartMenuProps> = ({
     { id: 'music', name: 'Music Player', icon: <Music className="text-zinc-600" size={24} />, color: 'text-blue-600' },
     { id: 'media', name: 'Media Player', icon: <PlayCircle className="text-blue-600" size={24} />, color: 'text-blue-600' },
     { id: 'paint', name: 'Paint', icon: <Palette className="text-red-500" size={24} />, color: 'text-blue-600' },
-    { id: 'doodle', name: 'DoodleDev', icon: <Code2 className="text-green-600" size={24} />, color: 'text-blue-600' },
+    { id: 'doodledev', name: 'DoodleDev', icon: <Code2 className="text-green-600" size={24} />, color: 'text-blue-600' },
     { id: 'games', name: 'Games', icon: <Gamepad2 className="text-purple-600" size={24} />, color: 'text-blue-600', hasArrow: true },
   ];
 
-  const rightApps = [
-    { id: 'facebook', name: 'Facebook', icon: <Facebook className="text-blue-600" size={18} /> },
-    { id: 'instagram', name: 'Instagram', icon: <Instagram className="text-pink-600" size={18} /> },
-    { id: 'github', name: 'Github', icon: <Github className="text-zinc-900" size={18} /> },
-    { id: 'linkedin', name: 'LinkedIn', icon: <Linkedin className="text-blue-700" size={18} /> },
-    { id: 'whatsapp', name: 'WhatsApp', icon: <MessageSquare className="text-green-500" size={18} /> },
-    { id: 'email', name: 'Email', icon: <Mail className="text-blue-500" size={18} /> },
-    { type: 'separator' },
-    { id: 'recent', name: 'Recently Used', icon: <Clock className="text-zinc-500" size={18} />, hasArrow: true },
-    { id: 'cmd', name: 'Command Prompt', icon: <Terminal className="text-zinc-800" size={18} /> },
-    { id: 'viewer', name: 'Image Viewer', icon: <ImageIcon className="text-emerald-600" size={18} /> },
-    { id: 'resume', name: 'My Resume', icon: <img src="https://icons.iconarchive.com/icons/aha-soft/standard-portfolio/128/Resume-icon.png" alt="My Resume" className="w-[18px] h-[18px] object-contain" referrerPolicy="no-referrer" /> },
+  const rightApps: { id: string; name: string; icon: React.ReactNode; type?: string; hasArrow?: boolean; onClick?: () => void }[] = [
+    { 
+      id: 'facebook', 
+      name: 'Facebook', 
+      icon: <Facebook className="text-blue-600" size={18} />,
+      onClick: () => window.open("https://www.facebook.com/kowser.monob.kongkal/", "_blank")
+    },
+    { 
+      id: 'instagram', 
+      name: 'Instagram', 
+      icon: <Instagram className="text-pink-600" size={18} />,
+      onClick: () => {} 
+    },
+    { 
+      id: 'github', 
+      name: 'Github', 
+      icon: <Github className="text-zinc-900" size={18} />,
+      onClick: () => window.open("https://github.com/Gacruxweb", "_blank")
+    },
+    { 
+      id: 'linkedin', 
+      name: 'LinkedIn', 
+      icon: <Linkedin className="text-blue-700" size={18} />,
+      onClick: () => window.open("https://www.linkedin.com/in/ahmed-kowser", "_blank")
+    },
+    { 
+      id: 'whatsapp', 
+      name: 'WhatsApp', 
+      icon: <MessageSquare className="text-green-500" size={18} />,
+      onClick: () => window.open("https://wa.me/+8801703220977", "_blank")
+    },
+    { 
+      id: 'email', 
+      name: 'Email', 
+      icon: <Mail className="text-blue-500" size={18} />,
+      onClick: () => window.location.href = "mailto:ahmedimteyajkowser@gmail.com"
+    },
+    { id: 'sep1', type: 'separator', name: '', icon: null },
+    { 
+      id: 'recent', 
+      name: 'Recently Used', 
+      icon: <Clock className="text-zinc-500" size={18} />, 
+      hasArrow: true 
+    },
+    { 
+      id: 'cmd', 
+      name: 'Command Prompt', 
+      icon: <Terminal className="text-zinc-800" size={18} /> 
+    },
+    { 
+      id: 'viewer', 
+      name: 'Image Viewer', 
+      icon: <ImageIcon className="text-emerald-600" size={18} /> 
+    },
+    { 
+      id: 'resume', 
+      name: 'My Resume', 
+      onClick: () => onAppClick('resume'),
+      icon: <img src="https://icons.iconarchive.com/icons/aha-soft/standard-portfolio/128/Resume-icon.png" alt="My Resume" className="w-[18px] h-[18px] object-contain" referrerPolicy="no-referrer" /> 
+    },
   ];
 
   return (
@@ -103,8 +151,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                     <button
                       key={app.id}
                       onClick={() => { 
-                        if (app.id === 'projects' || app.id === 'contact' || app.id === 'about') {
-                          onAppClick(app.id as WindowType);
+                        if (['projects', 'contact', 'about', 'media', 'doodledev'].includes(app.id)) {
+                          onAppClick(app.id);
                         }
                         onClose(); 
                       }}
@@ -143,6 +191,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({
                   return (
                     <button
                       key={app.id}
+                      onClick={() => {
+                        if (app.onClick) {
+                          app.onClick();
+                          onClose();
+                        }
+                      }}
                       className="flex items-center gap-2 px-2 py-1 hover:bg-[#316ac5] hover:text-white rounded-sm text-[12px] font-bold text-[#003399] text-left group"
                     >
                       <div className="w-5 h-5 flex items-center justify-center">

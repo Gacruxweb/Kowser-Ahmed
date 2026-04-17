@@ -52,12 +52,31 @@ export const AppSidebar: React.FC = () => {
     {
       title: "Social Links",
       items: [
-        { name: "Facebook", icon: <Facebook size={14} className="text-blue-600" /> },
-        { name: "Instagram", icon: <Instagram size={14} className="text-pink-600" /> },
-        { name: "Github", icon: <Github size={14} className="text-zinc-900" /> },
-        { name: "LinkedIn", icon: <Linkedin size={14} className="text-blue-700" /> },
-        { name: "WhatsApp", icon: <MessageCircle size={14} className="text-green-500" /> },
-        { name: "Email", icon: <Mail size={14} className="text-red-500" /> },
+        { 
+          name: "Facebook", 
+          icon: <Facebook size={14} className="text-blue-600" />,
+          onClick: () => window.open("https://www.facebook.com/kowser.monob.kongkal/", "_blank")
+        },
+        { 
+          name: "Github", 
+          icon: <Github size={14} className="text-zinc-900" />,
+          onClick: () => window.open("https://github.com/Gacruxweb", "_blank")
+        },
+        { 
+          name: "LinkedIn", 
+          icon: <Linkedin size={14} className="text-blue-700" />,
+          onClick: () => window.open("https://www.linkedin.com/in/ahmed-kowser", "_blank")
+        },
+        { 
+          name: "WhatsApp", 
+          icon: <MessageCircle size={14} className="text-green-500" />,
+          onClick: () => window.open("https://wa.me/+8801703220977", "_blank")
+        },
+        { 
+          name: "Email", 
+          icon: <Mail size={14} className="text-red-500" />,
+          onClick: () => window.location.href = "mailto:ahmedimteyajkowser@gmail.com"
+        },
       ]
     },
     {

@@ -24,9 +24,16 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onClick={onClick}
-      onDoubleClick={onDoubleClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(e);
+      }}
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        onDoubleClick?.(e);
+      }}
       onContextMenu={(e) => {
+        e.stopPropagation();
         if (onContextMenu) {
           e.preventDefault();
           onContextMenu(e);

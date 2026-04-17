@@ -19,9 +19,9 @@ import {
 interface TaskbarProps {
   windows: WindowState[];
   onStartClick: () => void;
-  onAppClick: (id: WindowType) => void;
-  onContextMenu: (e: React.MouseEvent, id: WindowType) => void;
-  activeWindowId: WindowType | null;
+  onAppClick: (id: string) => void;
+  onContextMenu: (e: React.MouseEvent, id: string) => void;
+  activeWindowId: string | null;
 }
 
 export const Taskbar: React.FC<TaskbarProps> = ({
@@ -39,6 +39,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({
     contact: <img src="https://icons.iconarchive.com/icons/icons-land/vista-hardware-devices/128/Smartphone-icon.png" alt="Contact Me" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
     settings: <Settings size={16} className="text-white" />,
     mycomputer: <img src="https://icons.iconarchive.com/icons/icons-land/vista-hardware-devices/128/Computer-icon.png" alt="My Computer" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    'project-detail': <FileText size={16} className="text-white" />,
+    media: <img src="https://icons.iconarchive.com/icons/microsoft/windows-8/128/Player-Video-icon.png" alt="Media Player" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    doodledev: <Code size={16} className="text-white" />,
   };
 
   return (
@@ -69,7 +72,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({
               )}
             >
               <div className="w-3.5 h-3.5 flex-shrink-0 flex items-center justify-center">
-                {appIcons[win.id]}
+                {appIcons[win.type as WindowType]}
               </div>
               <span className="text-[10px] text-white truncate font-medium drop-shadow-sm">
                 {win.title}

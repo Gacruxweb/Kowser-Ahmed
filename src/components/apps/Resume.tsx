@@ -8,6 +8,7 @@ import {
   LayoutGrid, 
   ChevronDown,
   Download,
+  Printer,
   ExternalLink,
   Briefcase,
   Target,
@@ -18,26 +19,33 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppSidebar } from '../AppSidebar';
-import { WindowsLogo } from '../WindowsLogo';
+import { AppMenuBar } from '../AppMenuBar';
+import { WindowType } from '@/src/types';
 
-export const Resume: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = false }) => {
+export const Resume: React.FC<{ isMaximized?: boolean; onOpenApp: (id: WindowType) => void }> = ({ 
+  isMaximized = false,
+  onOpenApp
+}) => {
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownload = () => {
+    // In a real environment, this would link to a static PDF file
+    // For now, we'll trigger print which allows "Save as PDF"
+    window.print();
+  };
 
   return (
-    <div className="flex flex-col h-full bg-white select-none font-sans text-[11px]">
-      {/* Menu Bar */}
-      <div className="flex items-center px-1 py-0.5 bg-[#ece9d8] border-b border-white/40 gap-4">
-        {['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help'].map(item => (
-          <button key={item} className="px-2 py-0.5 hover:bg-[#316ac5] hover:text-white rounded-sm">
-            {item}
-          </button>
-        ))}
-        <div className="ml-auto pr-2">
-          <WindowsLogo size={16} className="opacity-50" />
-        </div>
+    <div className="flex flex-col h-full bg-white select-none font-sans text-[11px] print:p-0">
+      {/* Menu Bar - Hidden on Print */}
+      <div className="print:hidden">
+        <AppMenuBar currentAppId="resume" onOpenApp={onOpenApp} />
       </div>
 
-      {/* Toolbar */}
-      <div className="flex items-center px-1 py-1 bg-[#ece9d8] border-b border-[#aca899] gap-1">
+      {/* Toolbar - Hidden on Print */}
+      <div className="flex items-center px-1 py-1 bg-[#ece9d8] border-b border-[#aca899] gap-1 print:hidden">
         <div className="flex items-center gap-0.5 pr-2 border-r border-[#aca899]">
           <button className="flex items-center gap-1 px-1 py-1 hover:bg-white/40 rounded-sm group opacity-50 cursor-not-allowed">
             <div className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white shadow-sm">
@@ -78,10 +86,28 @@ export const Resume: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = fals
           <LayoutGrid size={18} className="text-blue-500" />
           <ChevronDown size={10} className="opacity-60" />
         </button>
+
+        <button 
+          onClick={handleDownload}
+          className="flex items-center gap-2 px-2 py-1 hover:bg-white/40 rounded-sm transition-colors text-blue-600"
+          title="Download as PDF"
+        >
+          <Download size={18} />
+          <span className="text-gray-800">Download</span>
+        </button>
+
+        <button 
+          onClick={handlePrint}
+          className="flex items-center gap-2 px-2 py-1 hover:bg-white/40 rounded-sm transition-colors text-zinc-600"
+          title="Print Resume"
+        >
+          <Printer size={18} />
+          <span className="text-gray-800">Print</span>
+        </button>
       </div>
 
-      {/* Address Bar */}
-      <div className="flex items-center px-2 py-1 bg-[#ece9d8] border-b border-[#aca899] gap-2">
+      {/* Address Bar - Hidden on Print */}
+      <div className="flex items-center px-2 py-1 bg-[#ece9d8] border-b border-[#aca899] gap-2 print:hidden">
         <span className="text-[#666666]">Address</span>
         <div className="flex-1 flex items-center bg-white border border-[#7da2ce] px-1 h-5 gap-1">
           <FileText size={12} className="text-red-500" />
@@ -98,111 +124,133 @@ export const Resume: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = fals
 
       {/* Main Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        <AppSidebar />
+        {/* Sidebar - Hidden on Print */}
+        <div className="print:hidden h-full">
+          <AppSidebar />
+        </div>
 
-        {/* Main Content */}
-        <div className="flex-1 bg-[#316ac5] relative overflow-y-auto custom-scrollbar">
-          {/* Mesh Background Pattern */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-          
-          <div className="relative p-10 max-w-4xl mx-auto flex flex-col gap-8">
-            <div className="flex justify-between items-end">
-              <h1 className="text-5xl font-bold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] tracking-tight">
-                My Resume
-              </h1>
-              <button className="flex items-center gap-2 px-6 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-white font-bold transition-all shadow-xl">
-                <Download size={18} />
-                <span>Download PDF</span>
-              </button>
-            </div>
+        <div className="flex-1 bg-white relative overflow-y-auto custom-scrollbar print:bg-white print:overflow-visible">
+          <div className="max-w-[850px] mx-auto p-10 md:p-16 bg-white text-gray-800 font-sans leading-relaxed print:p-0">
+            <header className="border-b-2 border-[#2c3e50] pb-5 mb-6">
+              <h1 className="font-bold text-[#2c3e50] uppercase tracking-tight" style={{ fontSize: '24px', lineHeight: '22px', textDecorationLine: 'none', fontStyle: 'normal' }}>KOWSER AHMED</h1>
+              <div className="text-lg md:text-xl text-gray-600 font-semibold mt-1">UX/UI & Product Designer | AI-Powered Design Specialist</div>
+              <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
+                <span className="flex items-center gap-1">📧 ahmedimteyajkowser@gmail.com</span>
+                <span className="flex items-center gap-1">📞 +8801703220977</span>
+                <span className="flex items-center gap-1">🔗 <a href="https://www.linkedin.com/in/ahmed-kowser" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">LinkedIn</a></span>
+                <span className="flex items-center gap-1">🔗 <a href="https://wa.me/+8801703220977" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">WhatsApp</a></span>
+              </div>
+            </header>
 
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl overflow-hidden shadow-2xl p-8 space-y-12">
-              {/* Experience */}
-              <section className="space-y-6">
-                <h2 className="text-2xl font-bold text-blue-300 flex items-center gap-3">
-                  <Briefcase size={24} />
-                  Work Experience
-                </h2>
-                <div className="space-y-8">
-                  <div className="relative pl-6 border-l-2 border-blue-400/30">
-                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-xl font-bold text-white">Senior Visual Designer</h3>
-                        <span className="text-sm font-bold text-blue-200 bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30">2021 - Present</span>
-                      </div>
-                      <p className="text-blue-300 font-semibold">Creative Agency X</p>
-                      <p className="text-white/80 text-sm leading-relaxed pt-2">
-                        Leading the design team in creating high-impact visual identities and digital products for clients. Specialized in design systems and interactive prototypes.
-                      </p>
-                    </div>
-                  </div>
+            <section className="mb-8 font-sans">
+              <h2 className="text-xl font-bold text-[#2c3e50] border-l-4 border-[#2c3e50] pl-3 uppercase mb-4">Career Summary</h2>
+              <p className="text-[14px] text-gray-700">
+                UX/UI and Product Designer with 4+ years of experience designing user-centered websites, mobile applications, and digital products. 
+                Specialized in AI-assisted design workflows to accelerate ideation, wireframing, prototyping, and high-fidelity UI design. 
+                Strong background in usability, accessibility, and scalable design systems, with experience working with remote teams and international clients.
+              </p>
+            </section>
 
-                  <div className="relative pl-6 border-l-2 border-blue-400/30">
-                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-xl font-bold text-white">UI/UX Designer</h3>
-                        <span className="text-sm font-bold text-blue-200 bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30">2018 - 2021</span>
-                      </div>
-                      <p className="text-blue-300 font-semibold">Tech Startup Y</p>
-                      <p className="text-white/80 text-sm leading-relaxed pt-2">
-                        Designed and launched multiple mobile and web applications from scratch. Conducted user research and usability testing to iterate on product features.
-                      </p>
-                    </div>
-                  </div>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold text-[#2c3e50] border-l-4 border-[#2c3e50] pl-3 uppercase mb-4">Professional Experience</h2>
+              
+              <div className="mb-6">
+                <div className="flex flex-col md:flex-row justify-between font-bold text-[#34495e] text-[15px]">
+                  <span>User Experience Designer | Siegecode inc. (Remote)</span>
+                  <span className="text-gray-500 italic font-normal text-sm">Dec 2024 - Present</span>
                 </div>
-              </section>
+                <ul className="list-disc pl-5 mt-2 space-y-1 text-[13px] text-gray-700">
+                  <li>Lead end-to-end UX/UI design for web and mobile products.</li>
+                  <li>Apply AI tools to speed up design exploration, ideation, and UI refinement.</li>
+                  <li>Create user flows, wireframes, interactive prototypes, and high-fidelity interfaces.</li>
+                  <li>Collaborate with developers, product managers, and stakeholders in agile workflows.</li>
+                  <li>Ensure usability, accessibility, and consistency across platforms.</li>
+                  <li>Improve product experience through user-centered design principles.</li>
+                </ul>
+              </div>
 
-              {/* Education */}
-              <section className="space-y-6">
-                <h2 className="text-2xl font-bold text-emerald-300 flex items-center gap-3">
-                  <Target size={24} />
-                  Education
-                </h2>
-                <div className="space-y-8">
-                  <div className="relative pl-6 border-l-2 border-emerald-400/30">
-                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-xl font-bold text-white">Bachelor of Fine Arts in Graphic Design</h3>
-                        <span className="text-sm font-bold text-emerald-200 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-400/30">2014 - 2018</span>
-                      </div>
-                      <p className="text-emerald-300 font-semibold">University of Arts & Design</p>
-                    </div>
-                  </div>
+              <div className="mb-6">
+                <div className="flex flex-col md:flex-row justify-between font-bold text-[#34495e] text-[15px]">
+                  <span>User Experience Designer | A2Z-web (On-site)</span>
+                  <span className="text-gray-500 italic font-normal text-sm">Aug 2023 - Nov 2024</span>
                 </div>
-              </section>
+              </div>
 
-              {/* Certifications */}
-              <section className="space-y-6">
-                <h2 className="text-2xl font-bold text-orange-300 flex items-center gap-3">
-                  <Lightbulb size={24} />
-                  Certifications
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-300">
-                      <Target size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-bold">Google UX Design Professional</h4>
-                      <p className="text-white/50 text-xs">Coursera</p>
-                    </div>
-                  </div>
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-300">
-                      <Code2 size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-bold">Advanced React Patterns</h4>
-                      <p className="text-white/50 text-xs">Frontend Masters</p>
-                    </div>
-                  </div>
+              <div className="mb-6">
+                <div className="flex flex-col md:flex-row justify-between font-bold text-[#34495e] text-[15px]">
+                  <span>User Interface Designer (Freelance)</span>
+                  <span className="text-gray-500 italic font-normal text-sm">Feb 2022 - Jul 2023</span>
                 </div>
-              </section>
-            </div>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex flex-col md:flex-row justify-between font-bold text-[#34495e] text-[15px]">
+                  <span>Graphic Designer | Shopnokutir Event & Wedding Planner (On-site)</span>
+                  <span className="text-gray-500 italic font-normal text-sm">Mar 2019 - Feb 2022</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-xl font-bold text-[#2c3e50] border-l-4 border-[#2c3e50] pl-3 uppercase mb-4">Projects</h2>
+              <div className="space-y-3 text-[14px]">
+                <p>
+                  <strong className="text-gray-800">Live:</strong>{' '}
+                  <span className="text-blue-600 font-semibold space-x-1">
+                    <a href="https://siegecode.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Siegecode,</a>
+                    <a href="https://tcb.global/" target="_blank" rel="noopener noreferrer" className="hover:underline">TCB Global,</a>
+                    <a href="https://nusheba.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Nusheba,</a>
+                    <a href="https://jamanagroup.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Jamana Group,</a>
+                    <a href="https://jamanabd.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Jamana BD,</a>
+                    <a href="https://doctoranwar.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Doctor Anwar,</a>
+                    <a href="https://kazizafor.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Kazi Zafor,</a>
+                    <a href="https://hrm-five-nu.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:underline">Human Resource Management(HRM) System,</a>
+                    <a href="https://jamanasupershop.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Super shop Management System,</a>
+                  </span>
+                </p>
+                <p className="text-gray-700">
+                  <strong className="text-gray-800 font-bold">On-going:</strong> Accounts Management System, Human Resource Management System, Super Shop Management System 
+                </p>
+              </div>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-xl font-bold text-[#2c3e50] border-l-4 border-[#2c3e50] pl-3 uppercase mb-4">Core Skills</h2>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "UX/UI Design", "Product Design", "AI-Assisted Design", 
+                  "Mobile App Design", "Wireframing & Prototyping", "Design Systems", 
+                  "Usability & Accessibility", "Visual Design & Branding", "Agile & Remote Collaboration"
+                ].map(skill => (
+                  <span key={skill} className="px-3 py-1 bg-gray-100 border border-gray-300 rounded text-sm text-gray-700">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-xl font-bold text-[#2c3e50] border-l-4 border-[#2c3e50] pl-3 uppercase mb-4">Education</h2>
+              <div className="mb-4">
+                <div className="flex justify-between font-bold text-[#34495e] text-[15px]">
+                  <span>MBA, Anando Mohan College (National University)</span>
+                  <span className="text-gray-500 italic font-normal text-sm">Completed 2020</span>
+                </div>
+                <div className="text-sm text-gray-600">CGPA: 3.28</div>
+              </div>
+              <div>
+                <div className="flex justify-between font-bold text-[#34495e] text-[15px]">
+                  <span>Diploma in Web Application & Web Development</span>
+                  <span className="text-gray-500 italic font-normal text-sm">Completed 2024</span>
+                </div>
+                <div className="text-sm text-gray-600">National Institute of Youth Development | CGPA: 3.93</div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-bold text-[#2c3e50] border-l-4 border-[#2c3e50] pl-3 uppercase mb-4">Languages</h2>
+              <p className="text-[14px] text-gray-700">English (Fluent), Bangla (Mother language)</p>
+            </section>
           </div>
         </div>
       </div>

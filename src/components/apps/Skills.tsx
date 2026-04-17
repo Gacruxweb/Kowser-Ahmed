@@ -32,46 +32,61 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppSidebar } from '../AppSidebar';
-import { WindowsLogo } from '../WindowsLogo';
+import { AppMenuBar } from '../AppMenuBar';
+import { WindowType } from '@/src/types';
 
-export const Skills: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = false }) => {
+export const Skills: React.FC<{ isMaximized?: boolean; onOpenApp: (id: WindowType) => void }> = ({ 
+  isMaximized = false,
+  onOpenApp
+}) => {
 
-  const skillCategories = [
-    {
-      title: 'Design Tools',
-      skills: [
-        { name: 'Figma', level: 95, icon: <Figma size={24} /> },
-        { name: 'Adobe XD', level: 85, icon: <Layers size={24} /> },
-        { name: 'Photoshop', level: 80, icon: <Palette size={24} /> },
-        { name: 'Illustrator', level: 75, icon: <PenTool size={24} /> },
-      ]
-    },
-    {
-      title: 'UI/UX Skills',
-      skills: [
-        { name: 'User Research', level: 90, icon: <Search size={24} /> },
-        { name: 'Wireframing', level: 95, icon: <MousePointer2 size={24} /> },
-        { name: 'Prototyping', level: 90, icon: <Zap size={24} /> },
-        { name: 'Mobile Design', level: 95, icon: <Smartphone size={24} /> },
-        { name: 'Web Design', level: 90, icon: <Monitor size={24} /> },
-        { name: 'UX Writing', level: 70, icon: <MessageSquare size={24} /> },
-      ]
-    }
+  const designTools = [
+    { name: 'Figma', icon: 'https://www.vectorlogo.zone/logos/figma/figma-icon.svg' },
+    { name: 'Adobe XD', icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Adobe_XD_CC_icon.svg' },
+    { name: 'Photoshop', icon: 'https://www.adobe.com/cc-shared/assets/img/product-icons/svg/photoshop-40.svg' },
+    { name: 'Illustrator', icon: 'https://www.vectorlogo.zone/logos/adobe_illustrator/adobe_illustrator-icon.svg' },
+    { name: 'Webflow', icon: 'https://www.vectorlogo.zone/logos/webflow/webflow-icon.svg' },
+    { name: 'Framer', icon: 'https://www.vectorlogo.zone/logos/framer/framer-icon.svg' },
+    { name: 'Wix Studio', icon: 'https://www.vectorlogo.zone/logos/wix/wix-icon.svg' },
+  ];
+
+  const uiuxSkills = [
+    'User Experience (UX) Design',
+    'User Interface (UI) Design',
+    'Wireframing & Prototyping',
+    'Interaction Design',
+    'Visual Communication',
+    'Usability Testing',
+    'Information Architecture',
+    'Design Systems & Documentation',
+    'Human-Computer Interaction',
+    'Mobile & Responsive Design',
+    'Accessibility (WCAG)',
+    'User Journey Mapping'
+  ];
+
+  const otherSkills = [
+    'User research & problem discovery',
+    'Product thinking (understanding user needs + business goals)',
+    'Clear value proposition design',
+    'Competitor & market analysis',
+    'Information architecture & user flows',
+    'UX writing (clear, conversion-focused copy)',
+    'Data analysis (funnels, retention, user behavior)',
+    'Rapid prototyping & MVP building',
+    'AI-assisted design & workflow automation',
+    'Brand positioning & messaging',
+    'Creative problem solving & idea validation',
+    'Growth thinking (acquisition → retention)',
+    'Decision-making based on ROI',
+    'Communication & storytelling',
+    'Fast execution & iteration mindset'
   ];
 
   return (
     <div className="flex flex-col h-full bg-white select-none font-sans text-[11px]">
       {/* Menu Bar */}
-      <div className="flex items-center px-1 py-0.5 bg-[#ece9d8] border-b border-white/40 gap-4">
-        {['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help'].map(item => (
-          <button key={item} className="px-2 py-0.5 hover:bg-[#316ac5] hover:text-white rounded-sm">
-            {item}
-          </button>
-        ))}
-        <div className="ml-auto pr-2">
-          <WindowsLogo size={16} className="opacity-50" />
-        </div>
-      </div>
+      <AppMenuBar currentAppId="skills" onOpenApp={onOpenApp} />
 
       {/* Toolbar */}
       <div className="flex items-center px-1 py-1 bg-[#ece9d8] border-b border-[#aca899] gap-1">
@@ -122,7 +137,7 @@ export const Skills: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = fals
         <span className="text-[#666666]">Address</span>
         <div className="flex-1 flex items-center bg-white border border-[#7da2ce] px-1 h-5 gap-1">
           <Laptop size={12} className="text-blue-500" />
-          <span>My Skills</span>
+          <span>Control Panel\My Skills</span>
           <ChevronDown size={10} className="ml-auto opacity-40" />
         </div>
         <button className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/40 rounded-sm">
@@ -139,53 +154,55 @@ export const Skills: React.FC<{ isMaximized?: boolean }> = ({ isMaximized = fals
         <AppSidebar />
 
         {/* Main Content */}
-        <div className="flex-1 bg-[#316ac5] relative overflow-y-auto custom-scrollbar">
-          {/* Mesh Background Pattern */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-          
-          <div className="relative p-10 max-w-4xl mx-auto flex flex-col gap-12">
-            <h1 className="text-5xl font-bold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] tracking-tight">
-              My Skillset
-            </h1>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {skillCategories.map((category) => (
-                <div key={category.title} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 shadow-2xl">
-                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                    <div className="w-2 h-8 bg-blue-400 rounded-full" />
-                    {category.title}
-                  </h2>
-                  <div className="space-y-8">
-                    {category.skills.map((skill) => (
-                      <div key={skill.name} className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3 text-white">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                              {skill.icon}
-                            </div>
-                            <span className="text-lg font-semibold">{skill.name}</span>
-                          </div>
-                          <span className="text-sm font-bold text-blue-200">{skill.level}%</span>
-                        </div>
-                        <div className="h-3 w-full bg-black/30 rounded-full overflow-hidden border border-white/10">
-                          <div 
-                            className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                            style={{ width: `${skill.level}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+        <div className="flex-1 bg-white relative overflow-y-auto custom-scrollbar">
+          <div className="p-8 max-w-5xl mx-auto flex flex-col gap-10">
+            {/* Design Tools Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-gray-200 pb-2">
+                <h2 className="text-xl font-bold text-[#316ac5]">Design Tools</h2>
+              </div>
+              <div className="flex flex-wrap gap-y-6 gap-x-8 pt-2">
+                {designTools.map((tool) => (
+                  <div key={tool.name} className="flex items-center gap-3 group cursor-default min-w-max">
+                    <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-gray-50 rounded shadow-sm border border-gray-100 group-hover:border-blue-400 p-1">
+                      <img src={tool.icon} alt={tool.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                    </div>
+                    <span className="text-[14px] text-gray-700 font-medium group-hover:text-blue-600 whitespace-nowrap">{tool.name}</span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="p-8 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
-              <h3 className="text-2xl font-bold text-blue-300 mb-4">Current Focus</h3>
-              <p className="text-lg text-white/90 leading-relaxed font-medium">
-                I'm currently exploring <span className="text-blue-300 font-bold">Motion Design</span> and <span className="text-blue-300 font-bold">Advanced Prototyping</span> using Framer and Rive to create more dynamic and engaging user interfaces. I'm also deepening my knowledge in <span className="text-blue-300 font-bold">Frontend Development</span> to better bridge the gap between design and implementation.
-              </p>
+            {/* UIUX Skills Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-gray-200 pb-2">
+                <h2 className="text-xl font-bold text-[#316ac5]">UI/UX Design Skills</h2>
+              </div>
+              <div className="flex flex-wrap gap-y-3 gap-x-8 pt-2">
+                {uiuxSkills.map((skill) => (
+                  <div key={skill} className="flex items-start gap-2.5 group cursor-default min-w-max max-w-full">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400/50 mt-2 group-hover:bg-blue-500 flex-shrink-0 transition-colors" />
+                    <span className="text-[14px] text-gray-700 group-hover:text-black leading-tight whitespace-nowrap">{skill}</span>
+                  </div>
+                ))}
+              </div>
             </div>
+
+            {/* Other Skills Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-gray-200 pb-2">
+                <h2 className="text-xl font-bold text-[#316ac5]">Strategic & Multi-disciplinary Skills</h2>
+              </div>
+              <div className="flex flex-wrap gap-y-3 gap-x-10 pt-2">
+                {otherSkills.map((skill) => (
+                  <div key={skill} className="flex items-start gap-3 group cursor-default p-2 rounded hover:bg-blue-50/50 transition-colors min-w-max max-w-full">
+                    <div className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0 group-hover:scale-125 transition-transform" />
+                    <span className="text-[14px] text-gray-700 font-medium leading-normal whitespace-nowrap">{skill}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
