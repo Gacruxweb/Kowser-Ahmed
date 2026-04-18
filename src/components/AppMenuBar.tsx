@@ -12,13 +12,15 @@ export const AppMenuBar: React.FC<AppMenuBarProps> = ({ currentAppId, onOpenApp 
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const apps: { id: WindowType; label: string }[] = [
-    { id: 'mycomputer', label: 'My Computer' },
-    { id: 'about', label: 'About Me' },
-    { id: 'skills', label: 'My Skills' },
-    { id: 'projects', label: 'My Projects' },
-    { id: 'resume', label: 'My Resume' },
-    { id: 'contact', label: 'Contact Me' },
+  const apps: { id: WindowType; label: string; shortcut?: string }[] = [
+    { id: 'mycomputer', label: 'My Computer', shortcut: 'Alt+C' },
+    { id: 'about', label: 'About Me', shortcut: 'Alt+A' },
+    { id: 'skills', label: 'My Skills', shortcut: 'Alt+S' },
+    { id: 'projects', label: 'My Projects', shortcut: 'Alt+P' },
+    { id: 'resume', label: 'My Resume', shortcut: 'Alt+R' },
+    { id: 'contact', label: 'Contact Me', shortcut: 'Alt+M' },
+    { id: 'media', label: 'Media Player', shortcut: 'Alt+V' },
+    { id: 'doodledev', label: 'DoodleDev', shortcut: 'Alt+D' },
   ];
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export const AppMenuBar: React.FC<AppMenuBarProps> = ({ currentAppId, onOpenApp 
   }, [activeMenu]);
 
   return (
-    <div className="flex items-center px-1 py-0.5 bg-[#ece9d8] border-b border-white/40 gap-4" ref={menuRef}>
+    <div className="flex items-center px-1 py-0.5 bg-[#ece9d8] border-b border-white/40 gap-4 relative z-[9999]" ref={menuRef}>
       <div className="flex items-center">
         {['File', 'Edit', 'View', 'Favorites', 'Tools', 'Help'].map(item => (
           <div key={item} className="relative">
@@ -43,17 +45,17 @@ export const AppMenuBar: React.FC<AppMenuBarProps> = ({ currentAppId, onOpenApp 
               onClick={() => setActiveMenu(activeMenu === item ? null : item)}
               onMouseEnter={() => activeMenu && setActiveMenu(item)}
               className={cn(
-                "px-2 py-0.5 hover:bg-[#316ac5] hover:text-white rounded-sm text-[11px]",
+                "px-2 py-0.5 hover:bg-[#316ac5] hover:text-white rounded-sm text-[11px] outline-none",
                 activeMenu === item && "bg-[#316ac5] text-white"
               )}
             >
-              {item}
+              <span className="first-letter:underline">{item}</span>
             </button>
 
             {/* File Dropdown */}
             {activeMenu === 'File' && item === 'File' && (
               <div 
-                className="absolute left-0 top-full mt-0.5 min-w-[160px] bg-white border border-[#808080] py-0.5 z-[10000] shadow-md"
+                className="absolute left-0 top-full mt-0.5 min-w-[200px] bg-white border border-[#808080] py-0.5 z-[10000] shadow-[2px_2px_5px_rgba(0,0,0,0.3)] select-none"
               >
                 {apps.map((app) => (
                   <button
@@ -62,17 +64,18 @@ export const AppMenuBar: React.FC<AppMenuBarProps> = ({ currentAppId, onOpenApp 
                       onOpenApp(app.id);
                       setActiveMenu(null);
                     }}
-                    className="w-full text-left px-2 py-1 text-[11px] text-black hover:bg-[#316ac5] hover:text-white cursor-default"
+                    className="w-full text-left px-5 py-0.5 text-[11px] text-black hover:bg-[#316ac5] hover:text-white cursor-default flex justify-between items-center group"
                   >
-                    Open {app.label}
+                    <span>Open {app.label}</span>
+                    <span className="text-zinc-400 group-hover:text-white/60 ml-4">{app.shortcut}</span>
                   </button>
                 ))}
                 <div className="my-1 border-t border-[#808080]/30 mx-1" />
                 <button
                   onClick={() => setActiveMenu(null)}
-                  className="w-full text-left px-2 py-1 text-[11px] text-black hover:bg-[#316ac5] hover:text-white cursor-default"
+                  className="w-full text-left px-5 py-0.5 text-[11px] text-black hover:bg-[#316ac5] hover:text-white cursor-default"
                 >
-                  Close
+                  Exit
                 </button>
               </div>
             )}
@@ -80,15 +83,16 @@ export const AppMenuBar: React.FC<AppMenuBarProps> = ({ currentAppId, onOpenApp 
             {/* Placeholder Dropdowns for others */}
             {activeMenu === item && item !== 'File' && (
               <div 
-                className="absolute left-0 top-full mt-0.5 min-w-[120px] bg-white border border-[#808080] py-0.5 z-[10000] shadow-md"
+                className="absolute left-0 top-full mt-0.5 min-w-[120px] bg-white border border-[#808080] py-0.5 z-[10000] shadow-[2px_2px_5px_rgba(0,0,0,0.3)] select-none"
               >
-                <div className="px-4 py-2 text-[11px] text-[#808080] italic">No options</div>
+                <div className="px-4 py-2 text-[11px] text-[#808080] italic">No options available</div>
               </div>
             )}
           </div>
         ))}
       </div>
-      <div className="ml-auto pr-2">
+      <div className="ml-auto pr-2 flex items-center gap-2">
+        <div className="h-4 w-px bg-white/40" />
         <WindowsLogo size={16} className="opacity-50" />
       </div>
     </div>

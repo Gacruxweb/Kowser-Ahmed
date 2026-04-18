@@ -13,7 +13,9 @@ import {
   Info,
   ShieldCheck,
   Volume2,
-  FileText
+  FileText,
+  Terminal,
+  Image as ImageIcon
 } from 'lucide-react';
 
 interface TaskbarProps {
@@ -42,6 +44,14 @@ export const Taskbar: React.FC<TaskbarProps> = ({
     'project-detail': <FileText size={16} className="text-white" />,
     media: <img src="https://icons.iconarchive.com/icons/microsoft/windows-8/128/Player-Video-icon.png" alt="Media Player" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
     doodledev: <Code size={16} className="text-white" />,
+    paint: <img src="https://icons.iconarchive.com/icons/google/noto-emoji-activities/128/52733-artist-palette-icon.png" alt="Paint" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    pinball: <img src="https://icons.iconarchive.com/icons/gartoon-team/gartoon-apps/128/pinball-icon.png" alt="Pinball" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    solitaire: <img src="https://icons.iconarchive.com/icons/icons8/windows-8/128/Gaming-Cards-icon.png" alt="Solitaire" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    angrybirds: <img src="https://icons.iconarchive.com/icons/femfoyou/angry-birds/128/angry-bird-icon.png" alt="Angry Birds" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    redball: <img src="https://icons.iconarchive.com/icons/hopstarter/scrap/128/Aqua-Ball-Red-icon.png" alt="Red Ball" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    cmd: <Terminal size={16} className="text-white" />,
+    viewer: <ImageIcon size={16} className="text-white" />,
+    browser: <img src="https://icons.iconarchive.com/icons/tatice/cristal-intense/128/Internet-Explorer-icon.png" alt="Internet Explorer" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
   };
 
   return (

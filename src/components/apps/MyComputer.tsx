@@ -20,18 +20,30 @@ import {
   Image as ImageIcon,
   FileVideo,
   FileAudio,
-  FileText
+  FileText,
+  PlayCircle,
+  Palette,
+  Code2,
+  Terminal,
+  Facebook,
+  Instagram,
+  Github,
+  Linkedin,
+  MessageSquare,
+  FileDigit
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppSidebar } from '../AppSidebar';
 import { AppMenuBar } from '../AppMenuBar';
 import { WindowType } from '@/src/types';
 import { projects } from '@/src/projectsData';
+import { SAMPLE_IMAGES } from '@/src/constants/images';
 
 interface FileItem {
   name: string;
   type: 'folder' | 'file' | 'drive';
-  fileType?: 'video' | 'audio' | 'image' | 'project';
+  fileType?: 'video' | 'audio' | 'image' | 'project' | 'app';
+  appId?: string;
   url?: string;
   children?: FileItem[];
   id?: string;
@@ -63,8 +75,186 @@ export const MyComputer: React.FC<{
         type: 'drive',
         children: [
           { name: 'Documents and Settings', type: 'folder', children: [] },
-          { name: 'Program Files', type: 'folder', children: [] },
-          { name: 'WINDOWS', type: 'folder', children: [] },
+          { 
+            name: 'Program Files', 
+            type: 'folder', 
+            children: [
+              {
+                name: 'Accessories',
+                type: 'folder',
+                children: [
+                  { name: 'Media Player', type: 'file', fileType: 'app', appId: 'media' },
+                  { name: 'Music Player', type: 'file', fileType: 'app', appId: 'music' },
+                  { name: 'Paint', type: 'file', fileType: 'app', appId: 'paint' },
+                  { name: 'DoodleDev', type: 'file', fileType: 'app', appId: 'doodledev' },
+                  { name: 'Command Prompt', type: 'file', fileType: 'app', appId: 'cmd' },
+                  { name: 'Image Viewer', type: 'file', fileType: 'app', appId: 'viewer' },
+                ]
+              },
+              {
+                name: 'Games',
+                type: 'folder',
+                children: [
+                  { name: 'Pinball', type: 'file', fileType: 'app', appId: 'pinball' },
+                  { name: 'Solitaire', type: 'file', fileType: 'app', appId: 'solitaire' },
+                  { name: 'Angry Birds', type: 'file', fileType: 'app', appId: 'angrybirds' },
+                  { name: 'Red Ball', type: 'file', fileType: 'app', appId: 'redball' },
+                ]
+              },
+              {
+                name: 'Social Media',
+                type: 'folder',
+                children: [
+                  { name: 'Facebook', type: 'file', fileType: 'app', appId: 'facebook' },
+                  { name: 'Instagram', type: 'file', fileType: 'app', appId: 'instagram' },
+                  { name: 'GitHub', type: 'file', fileType: 'app', appId: 'github' },
+                  { name: 'LinkedIn', type: 'file', fileType: 'app', appId: 'linkedin' },
+                  { name: 'WhatsApp', type: 'file', fileType: 'app', appId: 'whatsapp' },
+                ]
+              },
+              {
+                name: 'Pages',
+                type: 'folder',
+                children: [
+                  { name: 'About Me', type: 'file', fileType: 'app', appId: 'about' },
+                  { name: 'Projects', type: 'file', fileType: 'app', appId: 'projects' },
+                  { name: 'Contact', type: 'file', fileType: 'app', appId: 'contact' },
+                  { name: 'Resume', type: 'file', fileType: 'app', appId: 'resume' },
+                ]
+              },
+              { name: 'Internet Explorer', type: 'file', fileType: 'app', appId: 'browser' },
+            ]
+          },
+          { 
+            name: 'WINDOWS', 
+            type: 'folder', 
+            children: [
+              { name: 'addins', type: 'folder', children: [] },
+              { name: 'appcompat', type: 'folder', children: [] },
+              { name: 'apppatch', type: 'folder', children: [] },
+              { name: 'AppReadiness', type: 'folder', children: [] },
+              { name: 'assembly', type: 'folder', children: [] },
+              { name: 'AUInstallAgent', type: 'folder', children: [] },
+              { name: 'Boot', type: 'folder', children: [] },
+              { name: 'Branding', type: 'folder', children: [] },
+              { name: 'CbsTemp', type: 'folder', children: [] },
+              { name: 'Containers', type: 'folder', children: [] },
+              { name: 'CSC', type: 'folder', children: [] },
+              { name: 'Cursors', type: 'folder', children: [] },
+              { name: 'debug', type: 'folder', children: [] },
+              { name: 'diagnostics', type: 'folder', children: [] },
+              { name: 'DigitalLocker', type: 'folder', children: [] },
+              { name: 'ELAMBKUP', type: 'folder', children: [] },
+              { name: 'en-US', type: 'folder', children: [] },
+              { name: 'Fonts', type: 'folder', children: [] },
+              { name: 'Globalization', type: 'folder', children: [] },
+              { name: 'Help', type: 'folder', children: [] },
+              { name: 'IdentityCRL', type: 'folder', children: [] },
+              { name: 'ImmersiveControlPanel', type: 'folder', children: [] },
+              { name: 'INF', type: 'folder', children: [] },
+              { name: 'InputMethod', type: 'folder', children: [] },
+              { name: 'L2Schemas', type: 'folder', children: [] },
+              { name: 'LanguageOverlayCache', type: 'folder', children: [] },
+              { 
+                name: 'Logs', 
+                type: 'folder', 
+                children: [
+                  { name: 'CBS', type: 'folder', children: [] },
+                  { name: 'DISM', type: 'folder', children: [] },
+                  { name: 'MoSetup', type: 'folder', children: [] },
+                ] 
+              },
+              { name: 'Media', type: 'folder', children: [] },
+              { name: 'Migration', type: 'folder', children: [] },
+              { name: 'Minidump', type: 'folder', children: [] },
+              { name: 'ModemLogs', type: 'folder', children: [] },
+              { name: 'OCR', type: 'folder', children: [] },
+              { name: 'Offline Web Pages', type: 'folder', children: [] },
+              { name: 'Panther', type: 'folder', children: [] },
+              { name: 'Performance', type: 'folder', children: [] },
+              { name: 'PLA', type: 'folder', children: [] },
+              { name: 'PolicyDefinitions', type: 'folder', children: [] },
+              { name: 'Prefetch', type: 'folder', children: [] },
+              { name: 'PrintDialog', type: 'folder', children: [] },
+              { name: 'Provisioning', type: 'folder', children: [] },
+              { name: 'Registration', type: 'folder', children: [] },
+              { name: 'Resources', type: 'folder', children: [] },
+              { name: 'SchCache', type: 'folder', children: [] },
+              { name: 'Security', type: 'folder', children: [] },
+              { 
+                name: 'ServiceProfiles', 
+                type: 'folder', 
+                children: [
+                  { name: 'LocalService', type: 'folder', children: [] },
+                  { name: 'NetworkService', type: 'folder', children: [] },
+                  { name: 'LocalSystem', type: 'folder', children: [] },
+                ] 
+              },
+              { name: 'Setup', type: 'folder', children: [] },
+              { name: 'ShellComponents', type: 'folder', children: [] },
+              { 
+                name: 'SoftwareDistribution', 
+                type: 'folder', 
+                children: [
+                  { name: 'DataStore', type: 'folder', children: [] },
+                  { name: 'Download', type: 'folder', children: [] },
+                  { name: 'SLS', type: 'folder', children: [] },
+                ] 
+              },
+              { name: 'Speech', type: 'folder', children: [] },
+              { name: 'System', type: 'folder', children: [] },
+              { 
+                name: 'System32', 
+                type: 'folder', 
+                children: [
+                  { name: 'config', type: 'folder', children: [] },
+                  { name: 'drivers', type: 'folder', children: [] },
+                  { name: 'DriverStore', type: 'folder', children: [] },
+                  { name: 'en-US', type: 'folder', children: [] },
+                  { name: 'LogFiles', type: 'folder', children: [] },
+                  { name: 'Tasks', type: 'folder', children: [] },
+                  { name: 'wbem', type: 'folder', children: [] },
+                  { name: 'WindowsPowerShell', type: 'folder', children: [] },
+                  { name: 'spool', type: 'folder', children: [] },
+                ] 
+              },
+              { 
+                name: 'SysWOW64', 
+                type: 'folder', 
+                children: [
+                  { name: 'config', type: 'folder', children: [] },
+                  { name: 'drivers', type: 'folder', children: [] },
+                  { name: 'en-US', type: 'folder', children: [] },
+                  { name: 'wbem', type: 'folder', children: [] },
+                ] 
+              },
+              { name: 'Temp', type: 'folder', children: [] },
+              { name: 'TextInput', type: 'folder', children: [] },
+              { name: 'tracing', type: 'folder', children: [] },
+              { name: 'twain_32', type: 'folder', children: [] },
+              { name: 'Vss', type: 'folder', children: [] },
+              { name: 'Web', type: 'folder', children: [] },
+              { 
+                name: 'WinSxS', 
+                type: 'folder', 
+                children: [
+                  { name: 'Backup', type: 'folder', children: [] },
+                  { name: 'Catalogs', type: 'folder', children: [] },
+                  { name: 'Manifests', type: 'folder', children: [] },
+                  { name: 'Temp', type: 'folder', children: [] },
+                ] 
+              },
+              { 
+                name: 'servicing', 
+                type: 'folder', 
+                children: [
+                  { name: 'Packages', type: 'folder', children: [] },
+                  { name: 'Sessions', type: 'folder', children: [] },
+                  { name: 'Version', type: 'folder', children: [] },
+                ] 
+              },
+            ] 
+          },
         ]
       },
       {
@@ -85,16 +275,16 @@ export const MyComputer: React.FC<{
             name: 'Video', 
             type: 'folder', 
             children: [
-              { name: 'Jason Leonard - 1.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/sMwKrxZKUSc?si=0kD9R8WnArOKgVM5' },
-              { name: 'Jason Leonard - 2.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/kw4tT7SCmaY?si=_E_6gZTafXl46FGe' },
-              { name: 'Jason Leonard - 3.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/TZE9gVF1QbA?si=uyeAVHGa645HooRX' },
-              { name: 'Jason Leonard - 4.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/RgKAFK5djSk?si=KQzK9xXZGNCqeJdG' },
-              { name: 'Jason Leonard - 5.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/AJtDXIazrMo?si=xyCWAIYrjkGCeT6U' },
-              { name: 'Jason Leonard - 6.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/kJQP7kiw5Fk?si=95eiN2CN74Kcovi5' },
-              { name: 'Jason Leonard - 7.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/2Vv-BfVoq4g?si=wxq8y1SrQiCHq5aN' },
-              { name: 'Jason Leonard - 8.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/hbqoaJ8sKsQ?si=sJfsGGBnx_n3nXRw' },
-              { name: 'Jason Leonard - 9.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/WTJSt4wP2ME?si=NTtx2IWXLeVvou47' },
-              { name: 'Jason Leonard.youtube', type: 'file', fileType: 'video', url: 'https://youtu.be/pRpeEdMmmQ0?si=RpkL4DXGXeWu2rAX' },
+              { name: 'Coke studio bangla- Ekla cholore', type: 'file', fileType: 'video', url: 'https://youtu.be/sMwKrxZKUSc?si=0kD9R8WnArOKgVM5' },
+              { name: 'Afreen Afreen', type: 'file', fileType: 'video', url: 'https://youtu.be/kw4tT7SCmaY?si=_E_6gZTafXl46FGe' },
+              { name: 'Game of Thrones inro', type: 'file', fileType: 'video', url: 'https://youtu.be/TZE9gVF1QbA?si=uyeAVHGa645HooRX' },
+              { name: 'Furious 7 title track', type: 'file', fileType: 'video', url: 'https://youtu.be/RgKAFK5djSk?si=KQzK9xXZGNCqeJdG' },
+              { name: 'Love me like you do', type: 'file', fileType: 'video', url: 'https://youtu.be/AJtDXIazrMo?si=xyCWAIYrjkGCeT6U' },
+              { name: 'Despacito', type: 'file', fileType: 'video', url: 'https://youtu.be/kJQP7kiw5Fk?si=95eiN2CN74Kcovi5' },
+              { name: 'Perfect- ed sheeran', type: 'file', fileType: 'video', url: 'https://youtu.be/2Vv-BfVoq4g?si=wxq8y1SrQiCHq5aN' },
+              { name: 'Broken angel', type: 'file', fileType: 'video', url: 'https://youtu.be/hbqoaJ8sKsQ?si=sJfsGGBnx_n3nXRw' },
+              { name: 'K naan - waving', type: 'file', fileType: 'video', url: 'https://youtu.be/WTJSt4wP2ME?si=NTtx2IWXLeVvou47' },
+              { name: 'Waka Waka', type: 'file', fileType: 'video', url: 'https://youtu.be/pRpeEdMmmQ0?si=RpkL4DXGXeWu2rAX' },
             ] 
           },
           { 
@@ -107,7 +297,11 @@ export const MyComputer: React.FC<{
             ] 
           },
           { name: 'Ringtones', type: 'folder', children: [] },
-          { name: 'Images', type: 'folder', children: [] },
+          { 
+            name: 'Images', 
+            type: 'folder', 
+            children: SAMPLE_IMAGES.map(img => ({ ...img, type: 'file', fileType: 'image' })) as any
+          },
         ]
       },
       { name: 'CD Drive (E:)', type: 'drive', children: [] }
@@ -155,10 +349,32 @@ export const MyComputer: React.FC<{
     if (item.type === 'folder' || item.type === 'drive') {
       navigateTo([...currentPath, item.name]);
     } else if (item.type === 'file') {
-      if (item.fileType === 'video') {
+      if (item.fileType === 'app' && item.appId) {
+        if (['facebook', 'github', 'linkedin', 'whatsapp'].includes(item.appId)) {
+          const links: Record<string, string> = {
+            facebook: "https://www.facebook.com/kowser.monob.kongkal/",
+            github: "https://github.com/Gacruxweb",
+            linkedin: "https://www.linkedin.com/in/ahmed-kowser",
+            whatsapp: "https://wa.me/+8801703220977"
+          };
+          window.open(links[item.appId], '_blank');
+        } else if (item.appId === 'viewer') {
+          onOpenApp('viewer' as any, 'viewer', `Image Viewer - Windows Picture and Fax Viewer`, { images: SAMPLE_IMAGES, initialIndex: 0 });
+        } else {
+          onOpenApp(item.appId as any, item.appId as any);
+        }
+      } else if (item.fileType === 'video') {
          onOpenApp('media', 'media', `Media Player - ${item.name}`, { url: item.url, type: 'video' });
       } else if (item.fileType === 'audio') {
          onOpenApp('media', 'media', `Media Player - ${item.name}`, { url: item.url, type: 'audio' });
+      } else if (item.fileType === 'image') {
+         const currentFolder = getCurrentFolder();
+         const imagesInFolder = currentFolder.children?.filter(child => child.fileType === 'image') || [];
+         const index = imagesInFolder.findIndex(img => img.name === item.name);
+         onOpenApp('viewer' as any, 'viewer', `${item.name} - Windows Picture and Fax Viewer`, { 
+            images: imagesInFolder.map(img => ({ name: img.name, url: img.url })), 
+            initialIndex: index >= 0 ? index : 0 
+         });
       } else if (item.fileType === 'project' && item.id) {
          onOpenApp(`project-${item.id}` as any, 'project-detail', `Project: ${item.name}`, { projectId: item.id });
       }
@@ -183,6 +399,32 @@ export const MyComputer: React.FC<{
     if (item.name.includes('CD Drive')) return <Disc size={32} className="text-zinc-300" />;
     if (item.type === 'folder') return <Folder size={32} className="text-[#fcc44e] fill-[#fcc44e]" />;
     
+    if (item.fileType === 'app' && item.appId) {
+      switch (item.appId) {
+        case 'browser': return <img src="https://icons.iconarchive.com/icons/tatice/cristal-intense/128/Internet-Explorer-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'about': return <img src="https://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/128/Actions-help-about-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'projects': return <img src="https://icons.iconarchive.com/icons/aha-soft/travel/128/globe-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'contact': return <img src="https://icons.iconarchive.com/icons/icons-land/vista-hardware-devices/128/Smartphone-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'resume': return <img src="https://icons.iconarchive.com/icons/aha-soft/standard-portfolio/128/Resume-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'media': return <PlayCircle size={32} className="text-blue-600" />;
+        case 'music': return <Music size={32} className="text-zinc-600" />;
+        case 'paint': return <Palette size={32} className="text-red-500" />;
+        case 'doodledev': return <Code2 size={32} className="text-green-600" />;
+        case 'cmd': return <Terminal size={32} className="text-zinc-800" />;
+        case 'viewer': return <ImageIcon size={32} className="text-emerald-600" />;
+        case 'pinball': return <img src="https://icons.iconarchive.com/icons/gartoon-team/gartoon-apps/128/pinball-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'solitaire': return <img src="https://icons.iconarchive.com/icons/icons8/windows-8/128/Gaming-Cards-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'facebook': return <Facebook size={32} className="text-blue-600" />;
+        case 'instagram': return <Instagram size={32} className="text-pink-600" />;
+        case 'github': return <Github size={32} className="text-zinc-900" />;
+        case 'linkedin': return <Linkedin size={32} className="text-blue-700" />;
+        case 'whatsapp': return <MessageSquare size={32} className="text-green-500" />;
+        case 'angrybirds': return <img src="https://icons.iconarchive.com/icons/femfoyou/angry-birds/128/angry-bird-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        case 'redball': return <img src="https://icons.iconarchive.com/icons/hopstarter/scrap/128/Aqua-Ball-Red-icon.png" alt="" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />;
+        default: return <FileDigit size={32} className="text-gray-400" />;
+      }
+    }
+
     switch (item.fileType) {
         case 'video': return <FileVideo size={32} className={item.url?.includes('youtu') ? "text-red-600" : "text-blue-500"} />;
         case 'audio': return <FileAudio size={32} className="text-green-500" />;

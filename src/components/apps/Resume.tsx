@@ -208,9 +208,11 @@ export const Resume: React.FC<{ isMaximized?: boolean; onOpenApp: (id: WindowTyp
                     <a href="https://jamanasupershop.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Super shop Management System,</a>
                   </span>
                 </p>
+                {/* 
                 <p className="text-gray-700">
                   <strong className="text-gray-800 font-bold">On-going:</strong> Accounts Management System, Human Resource Management System, Super Shop Management System 
                 </p>
+                */}
               </div>
             </section>
 

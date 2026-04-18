@@ -17,14 +17,20 @@ import { MyComputer } from './components/apps/MyComputer';
 import { ProjectDetail } from './components/apps/ProjectDetail';
 import { MediaPlayer } from './components/apps/MediaPlayer';
 import { DoodleDev } from './components/apps/DoodleDev';
+import { Paint } from './components/apps/Paint';
+import { CommandPrompt } from './components/apps/CommandPrompt';
+import { ImageViewer } from './components/apps/ImageViewer';
+import { Browser } from './components/Browser';
 import { LoginScreen } from './components/LoginScreen';
+import { CreateItemModal } from './components/CreateItemModal';
 import { projects } from './projectsData';
 import { BootScreen } from './components/BootScreen';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { HeroBackground } from './components/HeroBackground';
 import './styles/theme.css';
 import { Fireworks } from './components/ui/fireworks';
-import { User, Briefcase, Code, Mail, Settings, Power, Globe, RefreshCw, Compass, FileText } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { User, Briefcase, Code, Mail, Settings, Power, Globe, RefreshCw, Compass, FileText, Terminal } from 'lucide-react';
 
 export default function App() {
   const [isBooting, setIsBooting] = useState(true);
@@ -32,6 +38,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSleeping, setIsSleeping] = useState(false);
   const [isShutDown, setIsShutDown] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     if (isBooting) {
@@ -52,6 +59,13 @@ export default function App() {
     { id: 'mycomputer', type: 'mycomputer', title: 'My Computer', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     { id: 'media', type: 'media', title: 'Media Player', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     { id: 'doodledev', type: 'doodledev', title: 'DoodleDev', isOpen: false, isMinimized: false, isMaximized: true, zIndex: 1 },
+    { id: 'paint', type: 'paint', title: 'Paint', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    { id: 'pinball', type: 'pinball', title: 'Pinball', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    { id: 'solitaire', type: 'solitaire', title: 'Solitaire', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    { id: 'angrybirds', type: 'angrybirds', title: 'Angry Birds (Coming Soon)', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    { id: 'redball', type: 'redball', title: 'Red Ball (Coming Soon)', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    { id: 'cmd', type: 'cmd', title: 'Command Prompt', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    { id: 'browser', type: 'browser', title: 'Internet Explorer', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
   ]);
 
   const [isStartOpen, setIsStartOpen] = useState(false);
@@ -182,8 +196,113 @@ export default function App() {
       case 'settings': return <SettingsApp />;
       case 'mycomputer': return <MyComputer isMaximized={window.isMaximized} onOpenApp={onOpenApp} />;
       case 'project-detail': return <ProjectDetail projectId={window.params?.projectId} isMaximized={window.isMaximized} onClose={() => handleWindowAction(window.id, 'close')} />;
-      case 'media': return <MediaPlayer isMaximized={window.isMaximized} initialUrl={window.params?.url} initialType={window.params?.type} />;
+      case 'media': return <MediaPlayer isMaximized={window.isMaximized} initialUrl={window.params?.url} initialType={window.params?.type} onOpenApp={onOpenApp} />;
+      case 'viewer': return <ImageViewer images={window.params?.images} initialIndex={window.params?.initialIndex} isMaximized={window.isMaximized} />;
+      case 'browser': return <Browser isMaximized={window.isMaximized} initialUrl={window.params?.url} onOpenApp={onOpenApp} />;
       case 'doodledev': return <DoodleDev isMaximized={window.isMaximized} onOpenApp={onOpenApp} />;
+      case 'paint': return <Paint isMaximized={window.isMaximized} />;
+      case 'pinball': return (
+        <div className="w-full h-full bg-black overflow-hidden relative">
+          <iframe 
+            src="https://www.247pinball.com/" 
+            className="w-full h-full border-0" 
+            title="247 Pinball"
+            allow="autoplay; fullscreen"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+      );
+      case 'solitaire': return (
+        <div className="w-full h-full bg-[#1b5e20] overflow-hidden relative">
+          <iframe 
+            src="https://www.google.com/logos/fnbx/solitaire/standalone.4.html?hl=en&origin=www.google.com" 
+            className="w-full h-full border-0" 
+            title="Google Solitaire"
+            allow="autoplay; fullscreen"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+      );
+      case 'angrybirds': return (
+        <div className="w-full h-full bg-[#ECE9D8] flex flex-col items-center justify-center p-8 text-center select-none">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#003399 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+          <motion.img 
+            src="https://icons.iconarchive.com/icons/femfoyou/angry-birds/128/angry-bird-icon.png" 
+            alt="Angry Birds" 
+            className="w-24 h-24 mb-6 drop-shadow-xl"
+            initial={{ scale: 0.8, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            referrerPolicy="no-referrer"
+          />
+          <h2 className="text-3xl font-bold text-[#003399] mb-4 tracking-tight" style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}>
+            Angry Birds XP
+          </h2>
+          
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-64 h-5 bg-white border border-[#919B9C] p-[2px] shadow-inner rounded-sm overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-[#215CF3] via-[#7196F9] to-[#215CF3] w-full"
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              />
+            </div>
+            <p className="text-[#CC6600] font-bold text-lg italic animate-pulse">Coming Soon!</p>
+          </div>
+
+          <div className="mt-8 p-4 bg-white/50 border border-white/80 rounded-lg shadow-sm max-w-sm backdrop-blur-sm">
+            <p className="text-sm text-[#444] leading-relaxed">
+              Our feathered friends are currently stuck in the <span className="font-bold">Windows XP activation screen</span>. 
+              The update is being rolled out via dial-up connection. Please stand by.
+            </p>
+          </div>
+          
+          <div className="absolute bottom-4 text-[10px] text-[#919B9C] font-mono">
+            BUILD 2024.04.17-DEV_VERSION
+          </div>
+        </div>
+      );
+      case 'redball': return (
+        <div className="w-full h-full bg-[#ECE9D8] flex flex-col items-center justify-center p-8 text-center select-none">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#C40000 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+          <motion.img 
+            src="https://icons.iconarchive.com/icons/hopstarter/scrap/128/Aqua-Ball-Red-icon.png" 
+            alt="Red Ball" 
+            className="w-24 h-24 mb-6 drop-shadow-xl"
+            initial={{ y: -200, bounce: 0.5 }}
+            animate={{ y: 0 }}
+            transition={{ type: "spring", bounce: 0.6, duration: 1 }}
+            referrerPolicy="no-referrer"
+          />
+          <h2 className="text-3xl font-bold text-[#C40000] mb-4 tracking-tight" style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}>
+            Red Ball Adventure
+          </h2>
+          
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-64 h-5 bg-white border border-[#919B9C] p-[2px] shadow-inner rounded-sm overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-[#C40000] via-[#FF4D4D] to-[#C40000] w-full"
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              />
+            </div>
+            <p className="text-[#CC6600] font-bold text-lg italic animate-pulse">Under Maintenance</p>
+          </div>
+
+          <div className="mt-8 p-4 bg-white/50 border border-white/80 rounded-lg shadow-sm max-w-sm backdrop-blur-sm">
+            <p className="text-sm text-[#444] leading-relaxed font-medium">
+              The ball has rolled out of bounds! 🔴
+              <br /><br />
+              We are currently optimizing the physics engine for <span className="text-[#C40000] font-bold">DirectX 9.0c</span>. Please check back later.
+            </p>
+          </div>
+          
+          <div className="absolute bottom-4 text-[10px] text-[#919B9C] font-mono">
+            ENGINE_STATUS: CALIBRATING_GRAVITY
+          </div>
+        </div>
+      );
+      case 'cmd': return <CommandPrompt isMaximized={window.isMaximized} />;
       default: return null;
     }
   };
@@ -290,7 +409,21 @@ export default function App() {
               onClick={() => setSelectedIconId('mycomputer')}
               onDoubleClick={() => handleWindowAction('mycomputer', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'mycomputer')}
-              className={selectedIconId === 'mycomputer' ? 'bg-[#003399]/60 hover:bg-[#003399]/70 border border-white/20' : ''}
+              className={cn(
+                "-mt-[20px] -ml-[10px]",
+                selectedIconId === 'mycomputer' ? 'bg-[#003399]/60 border border-white/20' : ''
+              )}
+            />
+            <DesktopIcon 
+              name="Internet Explorer" 
+              icon={<img src="https://icons.iconarchive.com/icons/tatice/cristal-intense/128/Internet-Explorer-icon.png" alt="Internet Explorer" className="w-10 h-10 object-contain" referrerPolicy="no-referrer" />} 
+              onClick={() => setSelectedIconId('browser')}
+              onDoubleClick={() => handleWindowAction('browser', 'open')} 
+              onContextMenu={(e) => handleContextMenu(e, 'browser')}
+              className={cn(
+                "-mt-[40px] -ml-[10px]",
+                selectedIconId === 'browser' ? 'bg-[#003399]/60 border border-white/20' : ''
+              )}
             />
             <DesktopIcon 
               name="About Me" 
@@ -298,7 +431,10 @@ export default function App() {
               onClick={() => setSelectedIconId('about')}
               onDoubleClick={() => handleWindowAction('about', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'about')}
-              className={selectedIconId === 'about' ? 'bg-[#003399]/60 hover:bg-[#003399]/70 border border-white/20' : ''}
+              className={cn(
+                "-mt-[55px] -ml-[10px] pl-[3px]",
+                selectedIconId === 'about' ? 'bg-[#003399]/60 border border-white/20' : ''
+              )}
             />
             <DesktopIcon 
               name="My Projects" 
@@ -306,7 +442,10 @@ export default function App() {
               onClick={() => setSelectedIconId('projects')}
               onDoubleClick={() => handleWindowAction('projects', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'projects')}
-              className={selectedIconId === 'projects' ? 'bg-[#003399]/60 hover:bg-[#003399]/70 border border-white/20' : ''}
+              className={cn(
+                "-mt-[70px] -ml-[10px] pl-[1px] pt-0",
+                selectedIconId === 'projects' ? 'bg-[#003399]/60 border border-white/20' : ''
+              )}
             />
             <DesktopIcon 
               name="My Skills" 
@@ -314,7 +453,10 @@ export default function App() {
               onClick={() => setSelectedIconId('skills')}
               onDoubleClick={() => handleWindowAction('skills', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'skills')}
-              className={selectedIconId === 'skills' ? 'bg-[#003399]/60 hover:bg-[#003399]/70 border border-white/20' : ''}
+              className={cn(
+                "-mt-[92px] -ml-[10px] pl-[1px]",
+                selectedIconId === 'skills' ? 'bg-[#003399]/60 border border-white/20' : ''
+              )}
             />
             <DesktopIcon 
               name="My Resume" 
@@ -322,7 +464,10 @@ export default function App() {
               onClick={() => setSelectedIconId('resume')}
               onDoubleClick={() => handleWindowAction('resume', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'resume')}
-              className={selectedIconId === 'resume' ? 'bg-[#003399]/60 hover:bg-[#003399]/70 border border-white/20' : ''}
+              className={cn(
+                "-mt-[114px] -ml-[10px] pl-0",
+                selectedIconId === 'resume' ? 'bg-[#003399]/60 border border-white/20' : ''
+              )}
             />
             <DesktopIcon 
               name="Contact Me" 
@@ -330,7 +475,10 @@ export default function App() {
               onClick={() => setSelectedIconId('contact')}
               onDoubleClick={() => handleWindowAction('contact', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'contact')}
-              className={selectedIconId === 'contact' ? 'bg-[#003399]/60 hover:bg-[#003399]/70 border border-white/20' : ''}
+              className={cn(
+                "-mt-[135px] -ml-[10px] pl-0",
+                selectedIconId === 'contact' ? 'bg-[#003399]/60 border border-white/20' : ''
+              )}
             />
           </div>
 
@@ -350,11 +498,14 @@ export default function App() {
         ))}
       </AnimatePresence>
 
+      {/* Create Item Modal */}
+      {showCreateModal && <CreateItemModal onClose={() => setShowCreateModal(false)} />}
+
       {/* Start Menu */}
       <StartMenu 
         isOpen={isStartOpen} 
         onClose={() => setIsStartOpen(false)}
-        onAppClick={(id) => handleWindowAction(id, 'open')}
+        onAppClick={(id, params) => handleWindowAction(id, 'open', id as WindowType, id, params)}
         onPowerAction={handlePowerAction}
       />
 
@@ -405,15 +556,16 @@ export default function App() {
             label: 'New', 
             hasSubmenu: true, 
             submenuItems: [
-              { label: 'Folder', onClick: () => {} },
-              { label: 'Shortcut', onClick: () => {} },
+              { label: 'Folder', disabled: true, onClick: () => {} },
+              { label: 'Shortcut', disabled: true, onClick: () => {} },
               { label: 'SEPARATOR' },
-              { label: 'Bitmap Image', onClick: () => {} },
-              { label: 'Text Document', onClick: () => {} },
-              { label: 'Wave Sound', onClick: () => {} },
-              { label: 'Briefcase', onClick: () => {} },
+              { label: 'Bitmap Image', disabled: true, onClick: () => {} },
+              { label: 'Text Document', disabled: true, onClick: () => {} },
+              { label: 'Wave Sound', disabled: true, onClick: () => {} },
+              { label: 'Briefcase', disabled: true, onClick: () => {} },
               { label: 'SEPARATOR' },
-              { label: 'Upload from Computer...', onClick: () => {} },
+              { label: 'Create New Resource...', disabled: true, icon: <Layers size={14} />, onClick: () => {} },
+              { label: 'Upload from Computer...', disabled: true, onClick: () => {} },
             ]
           },
           { label: 'SEPARATOR' },

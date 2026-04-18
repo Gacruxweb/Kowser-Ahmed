@@ -7,7 +7,7 @@ export const HeroBackground: React.FC = () => {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-[#003399]">
       <img
-        src="https://lh3.googleusercontent.com/d/1WGuYL34zahhYqib0Dzyis9JnbQRT909f"
+        src="https://lh3.googleusercontent.com/d/1H1_DzpZyqNpwAgFJasKubJE-KIhc6kjG"
         alt="Desktop Background"
         className={cn(
           "absolute w-full h-full object-cover transition-opacity duration-1000",

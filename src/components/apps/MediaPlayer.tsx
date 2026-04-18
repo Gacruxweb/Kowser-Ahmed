@@ -19,14 +19,18 @@ import {
 import { cn } from '@/lib/utils';
 import { getGoogleDriveDirectUrl } from '@/src/lib/driveUtils';
 
+import { WindowType } from '@/src/types';
+
 export const MediaPlayer: React.FC<{ 
   isMaximized?: boolean; 
   initialUrl?: string; 
-  initialType?: 'video' | 'embed' | 'audio' 
+  initialType?: 'video' | 'embed' | 'audio';
+  onOpenApp?: (id: WindowType) => void;
 }> = ({ 
   isMaximized = false,
   initialUrl,
-  initialType
+  initialType,
+  onOpenApp
 }) => {
   const [url, setUrl] = useState(initialUrl || '');
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
@@ -55,6 +59,7 @@ export const MediaPlayer: React.FC<{
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     if (initialUrl) {
@@ -91,7 +96,7 @@ export const MediaPlayer: React.FC<{
     let finalUrl = targetUrl;
 
     if (youtubeId) {
-      finalUrl = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&origin=${window.location.origin}`;
+      finalUrl = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&enablejsapi=1&origin=${window.location.origin}`;
       activeType = 'embed';
     } else if (gDriveId) {
       if (activeType === 'embed') {
@@ -108,21 +113,37 @@ export const MediaPlayer: React.FC<{
 
   const handleNext = () => {
     const currentIndex = playlist.findIndex(item => item.url === url);
-    if (currentIndex !== -1 && currentIndex < playlist.length - 1) {
-      const next = playlist[currentIndex + 1];
+    if (currentIndex !== -1) {
+      const nextIndex = (currentIndex + 1) % playlist.length;
+      const next = playlist[nextIndex];
       handlePlay(next.url, next.type);
     }
   };
 
   const handlePrev = () => {
     const currentIndex = playlist.findIndex(item => item.url === url);
-    if (currentIndex !== -1 && currentIndex > 0) {
-      const prev = playlist[currentIndex - 1];
+    if (currentIndex !== -1) {
+      const prevIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+      const prev = playlist[prevIndex];
       handlePlay(prev.url, prev.type);
     }
   };
 
   const togglePlay = () => {
+    if (mediaType === 'embed') {
+      const iframe = iframeRef.current;
+      if (iframe && iframe.contentWindow) {
+        const command = isPlaying ? 'pauseVideo' : 'playVideo';
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: command,
+          args: []
+        }), '*');
+        setIsPlaying(!isPlaying);
+      }
+      return;
+    }
+
     const media = videoRef.current || audioRef.current;
     if (media) {
       if (isPlaying) {
@@ -200,6 +221,7 @@ export const MediaPlayer: React.FC<{
             </div>
           ) : mediaType === 'embed' ? (
             <iframe 
+              ref={iframeRef}
               src={playingUrl} 
               className="w-full h-full border-none z-0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -319,24 +341,7 @@ export const MediaPlayer: React.FC<{
       </div>
 
       {/* YouTube Dark Bottom Bar */}
-      <div className="bg-[#0f0f0f] border-t border-zinc-900 flex flex-col p-4">
-        {/* Seeker Bar */}
-        <div className="flex items-center gap-3 px-1 mb-3">
-           <div className="relative flex-1 group">
-             <input 
-               type="range"
-               min="0"
-               max="100"
-               value={progress}
-               onChange={handleSeek}
-               className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-600 focus:outline-none group-hover:h-2 transition-all"
-               style={{
-                  background: `linear-gradient(to right, #dc2626 ${progress}%, #27272a ${progress}%)`
-               }}
-             />
-           </div>
-        </div>
-
+      <div className="bg-[#0f0f0f] border-t border-zinc-900 flex flex-col px-4 py-1">
         <div className="flex items-center justify-between px-1">
           {/* Controls */}
           <div className="flex items-center gap-5">
@@ -351,25 +356,6 @@ export const MediaPlayer: React.FC<{
 
              <button onClick={handleNext} className="text-zinc-400 hover:text-white transition-colors"><SkipForward size={20} fill="currentColor" /></button>
              
-             <div className="flex items-center gap-3 ml-2">
-               <div className="flex items-center gap-2 group/vol">
-                 <button onClick={toggleMute} className="text-zinc-400 hover:text-zinc-200 transition-colors">
-                   {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                 </button>
-                 <input 
-                   type="range"
-                   min="0"
-                   max="1"
-                   step="0.01"
-                   value={volume}
-                   onChange={handleVolumeChange}
-                   className="w-20 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white"
-                 />
-               </div>
-               <span className="text-[12px] font-medium text-zinc-300 ml-2">
-                 {formatTime(currentTime)} / {formatTime(duration)}
-               </span>
-             </div>
           </div>
 
           <div className="flex items-center gap-5">
@@ -379,15 +365,6 @@ export const MediaPlayer: React.FC<{
              >
                <List size={20} />
              </button>
-             
-             <button 
-                className="text-zinc-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-zinc-800"
-                onClick={() => setPlayingUrl(null)}
-              >
-               <RotateCcw size={20} />
-             </button>
-             
-             <button className="text-zinc-400 hover:text-white p-2 rounded-lg hover:bg-zinc-800"><Maximize2 size={20} /></button>
           </div>
         </div>
       </div>

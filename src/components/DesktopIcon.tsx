@@ -40,7 +40,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
         }
       }}
       className={cn(
-        "w-20 h-[90px] flex flex-col items-center justify-center gap-1 rounded-sm hover:bg-[#003399]/40 transition-colors group",
+        "w-20 h-[90px] flex flex-col items-center justify-center gap-1 rounded-sm transition-colors group",
         className
       )}
     >
