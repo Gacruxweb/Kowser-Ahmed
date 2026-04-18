@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'motion/react';
 
 interface CommandPromptProps {
   isMaximized?: boolean;
+  onOpenApp?: (id: string, type?: any, title?: string, params?: any) => void;
 }
 
-export const CommandPrompt: React.FC<CommandPromptProps> = ({ isMaximized }) => {
+export const CommandPrompt: React.FC<CommandPromptProps> = ({ isMaximized, onOpenApp }) => {
   const [history, setHistory] = useState<string[]>([
     'Microsoft Windows [Version 5.1.2600]',
     '(C) Copyright 1985-2001 Microsoft Corp.',
@@ -44,6 +45,34 @@ export const CommandPrompt: React.FC<CommandPromptProps> = ({ isMaximized }) => 
       response = `The current time is: ${new Date().toLocaleTimeString()}`;
     } else if (cmd.startsWith('echo ')) {
       response = input.substring(5);
+    } else if (cmd.startsWith('open-')) {
+      const appName = cmd.substring(5).trim();
+      const apps: Record<string, { id: string, type?: string }> = {
+        'my computer': { id: 'mycomputer' },
+        'internet explorer': { id: 'browser' },
+        'browser': { id: 'browser' },
+        'about': { id: 'about' },
+        'projects': { id: 'projects' },
+        'skills': { id: 'skills' },
+        'resume': { id: 'resume' },
+        'contact': { id: 'contact' },
+        'paint': { id: 'paint' },
+        'media player': { id: 'media' },
+        'music player': { id: 'music' },
+        'doodledev': { id: 'doodledev' },
+        'pinball': { id: 'pinball' },
+        'solitaire': { id: 'solitaire' },
+        'angry birds': { id: 'angrybirds' },
+        'red ball': { id: 'redball' },
+        'calculator': { id: 'settings' }
+      };
+
+      if (apps[appName]) {
+        onOpenApp?.(apps[appName].id, apps[appName].type as any);
+        response = `Opening ${appName}...`;
+      } else {
+        response = `'${appName}' is not a recognized program or page name.`;
+      }
     } else if (cmd === '') {
       response = '';
     } else {

@@ -160,6 +160,18 @@
     border-left: 1px solid #084c8d;
   }
 
+  /* Full Screen Mode "Nuclear" Fix */
+  .xp-window-maximized {
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 30px) !important;
+    transform: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    z-index: 9999 !important;
+  }
+
   .xp-app-btn {
     background: linear-gradient(to bottom, #3c81f0 0%, #245edb 100%);
     border: 1px solid rgba(255, 255, 255, 0.15);

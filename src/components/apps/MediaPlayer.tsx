@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getGoogleDriveDirectUrl } from '@/src/lib/driveUtils';
+import { SAMPLE_VIDEOS } from '@/src/constants/videos';
 
 import { WindowType } from '@/src/types';
 
@@ -44,18 +45,11 @@ export const MediaPlayer: React.FC<{
   const [showControls, setShowControls] = useState(true);
   const [showPlaylist, setShowPlaylist] = useState(false);
 
-  const playlist = useMemo(() => [
-    { title: 'Jason Leonard - Selection 1', url: 'https://youtu.be/sMwKrxZKUSc?si=0kD9R8WnArOKgVM5', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 2', url: 'https://youtu.be/kw4tT7SCmaY?si=_E_6gZTafXl46FGe', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 3', url: 'https://youtu.be/TZE9gVF1QbA?si=uyeAVHGa645HooRX', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 4', url: 'https://youtu.be/RgKAFK5djSk?si=KQzK9xXZGNCqeJdG', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 5', url: 'https://youtu.be/AJtDXIazrMo?si=xyCWAIYrjkGCeT6U', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 6', url: 'https://youtu.be/kJQP7kiw5Fk?si=95eiN2CN74Kcovi5', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 7', url: 'https://youtu.be/2Vv-BfVoq4g?si=wxq8y1SrQiCHq5aN', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 8', url: 'https://youtu.be/hbqoaJ8sKsQ?si=sJfsGGBnx_n3nXRw', type: 'embed' as const },
-    { title: 'Jason Leonard - Selection 9', url: 'https://youtu.be/WTJSt4wP2ME?si=NTtx2IWXLeVvou47', type: 'embed' as const },
-    { title: 'YouTube: Jason Leonard', url: 'https://youtu.be/pRpeEdMmmQ0?si=RpkL4DXGXeWu2rAX', type: 'embed' as const },
-  ], []);
+  const playlist = useMemo(() => SAMPLE_VIDEOS.map(v => ({
+    title: v.name,
+    url: v.url,
+    type: 'embed' as const
+  })), []);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);

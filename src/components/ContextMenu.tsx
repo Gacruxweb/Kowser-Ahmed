@@ -59,11 +59,20 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 
       let newX = x;
       let newY = y;
+      const taskbarHeight = 32;
 
       if (x + rect.width > viewportWidth) {
         newX = x - rect.width;
       }
+      
+      // Standard viewport boundary check
       if (y + rect.height > viewportHeight) {
+        newY = viewportHeight - rect.height;
+      }
+
+      // If triggered at the taskbar line (bottom of screen area), 
+      // strictly flip UP to avoid overlapping the taskbar
+      if (y >= viewportHeight - taskbarHeight && newY + rect.height > viewportHeight - taskbarHeight) {
         newY = y - rect.height;
       }
 

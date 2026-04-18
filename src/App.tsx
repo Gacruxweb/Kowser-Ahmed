@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { WindowFrame } from './components/WindowFrame';
 import { Taskbar } from './components/Taskbar';
@@ -6,7 +6,7 @@ import { StartMenu } from './components/StartMenu';
 import { DesktopIcon } from './components/DesktopIcon';
 import { ContextMenu } from './components/ContextMenu';
 import { WindowState, WindowType } from './types';
-import { Square, Minus, X, Layers, Move } from 'lucide-react';
+import { Square, Minus, X, Layers, Move, Maximize2 } from 'lucide-react';
 import { About } from './components/apps/About';
 import { Projects } from './components/apps/Projects';
 import { Skills } from './components/apps/Skills';
@@ -89,18 +89,37 @@ export default function App() {
     type: 'desktop',
   });
 
+  const desktopRef = useRef<HTMLDivElement>(null);
+
   const handleContextMenu = (e: React.MouseEvent, id: string | null, type: 'desktop' | 'taskbar' | 'empty-desktop' = 'desktop') => {
     e.preventDefault();
+    let x = e.clientX;
+    let y = e.clientY;
+
+    if (type === 'taskbar') {
+      const rect = e.currentTarget.getBoundingClientRect();
+      // Align with the start of the title text (Padding (8px) + Icon (14px) + Gap (6px) = ~28px)
+      x = rect.left + 28;
+      y = rect.top; // Top edge of taskbar
+    }
+
     setContextMenu({
       show: true,
-      x: e.clientX,
-      y: e.clientY,
+      x,
+      y,
       targetAppId: id,
       type,
     });
   };
 
-  const handleWindowAction = (id: string, action: 'open' | 'close' | 'minimize' | 'maximize' | 'focus', type?: WindowType, title?: string, params?: any) => {
+  const handleWindowAction = (
+    id: string, 
+    action: 'open' | 'close' | 'minimize' | 'maximize' | 'focus' | 'update', 
+    type?: WindowType, 
+    title?: string, 
+    params?: any,
+    updates?: Partial<WindowState>
+  ) => {
     setWindows(prev => {
       const exists = prev.find(win => win.id === id);
       
@@ -108,17 +127,6 @@ export default function App() {
         const newZIndex = maxZIndex + 1;
         setMaxZIndex(newZIndex);
         setActiveWindowId(id);
-
-        // Auto-discovery for projects
-        if (!type && id.startsWith('project-')) {
-          const pId = id.replace('project-', '');
-          const project = projects.find(p => p.id === pId);
-          if (project) {
-            type = 'project-detail';
-            title = `Project: ${project.title}`;
-            params = { projectId: pId };
-          }
-        }
 
         if (type) {
           const newWin: WindowState = {
@@ -136,22 +144,25 @@ export default function App() {
       }
 
       return prev.map(win => {
-      if (win.id === id) {
-        const newZIndex = action === 'focus' || action === 'open' ? maxZIndex + 1 : win.zIndex;
-        if (action === 'focus' || action === 'open') setMaxZIndex(newZIndex);
-        
-        if (action === 'open') {
-          setActiveWindowId(id);
-          return { 
-            ...win, 
-            isOpen: true, 
-            isMinimized: false, 
-            zIndex: newZIndex,
-            title: title || win.title,
-            params: params || win.params
-          };
-        }
-        if (action === 'close') {
+        if (win.id === id) {
+          const newZIndex = action === 'focus' || action === 'open' ? maxZIndex + 1 : win.zIndex;
+          if (action === 'focus' || action === 'open') setMaxZIndex(newZIndex);
+          
+          if (action === 'open') {
+            setActiveWindowId(id);
+            return { 
+              ...win, 
+              isOpen: true, 
+              isMinimized: false, 
+              zIndex: newZIndex,
+              title: title || win.title,
+              params: params || win.params
+            };
+          }
+          if (action === 'update' && updates) {
+            return { ...win, ...updates };
+          }
+          if (action === 'close') {
           if (activeWindowId === id) setActiveWindowId(null);
           // For dynamic windows (project-detail), we might want to remove them from state
           // but keeping them in state with isOpen: false is also fine for XP feel (history)
@@ -164,7 +175,7 @@ export default function App() {
           return { ...win, isMinimized: true };
         }
         if (action === 'maximize') {
-          return { ...win, isMaximized: !win.isMaximized, zIndex: newZIndex };
+          return { ...win, isMaximized: !win.isMaximized, snapMode: 'none', zIndex: newZIndex };
         }
         if (action === 'focus') {
           setActiveWindowId(id);
@@ -175,6 +186,53 @@ export default function App() {
     });
   });
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Global Refresh
+      if (e.key === 'F5') {
+        e.preventDefault();
+        setRefreshKey(prev => prev + 1);
+      }
+
+      if (activeWindowId) {
+        // Alt + Space
+        if (e.altKey && e.code === 'Space') {
+          e.preventDefault();
+          handleWindowAction(activeWindowId, 'maximize');
+        }
+        
+        // Win/Cmd/Ctrl + Arrows for Snapping
+        if (e.metaKey || e.altKey) {
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            handleWindowAction(activeWindowId, 'update', undefined, undefined, undefined, {
+              isMaximized: false,
+              snapMode: 'left',
+              position: { x: 0, y: 0 },
+              size: { width: '50vw', height: 'calc(100vh - 30px)' }
+            });
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            handleWindowAction(activeWindowId, 'update', undefined, undefined, undefined, {
+              isMaximized: false,
+              snapMode: 'right',
+              position: { x: window.innerWidth / 2, y: 0 },
+              size: { width: '50vw', height: 'calc(100vh - 30px)' }
+            });
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            handleWindowAction(activeWindowId, 'maximize');
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            handleWindowAction(activeWindowId, 'minimize');
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeWindowId]);
 
   const renderAppContent = (window: WindowState) => {
     const onOpenApp = (targetId: string, type?: WindowType, title?: string, params?: any) => 
@@ -302,7 +360,7 @@ export default function App() {
           </div>
         </div>
       );
-      case 'cmd': return <CommandPrompt isMaximized={window.isMaximized} />;
+      case 'cmd': return <CommandPrompt isMaximized={window.isMaximized} onOpenApp={onOpenApp} />;
       default: return null;
     }
   };
@@ -386,7 +444,7 @@ export default function App() {
       </AnimatePresence>
 
       {isLoggedIn && !isBooting && !isWelcoming && (
-        <div className="relative w-screen h-screen overflow-hidden font-sans bg-[#003399]">
+        <div ref={desktopRef} className="fixed inset-0 overflow-hidden font-sans bg-[#003399] z-[1]">
           {/* Cinematic Hero Background */}
           <HeroBackground />
           
@@ -396,7 +454,7 @@ export default function App() {
           {/* Desktop Icons */}
           <div 
             key={refreshKey}
-            className="absolute inset-0 p-5 grid grid-cols-[repeat(1,80px)] grid-rows-[repeat(auto-fill,90px)] grid-flow-col gap-[10px] z-1"
+            className="absolute inset-0 p-4 flex flex-col flex-wrap gap-1 items-start justify-start z-1 content-start"
             onClick={() => setSelectedIconId(null)}
             onContextMenu={(e) => handleContextMenu(e, null, 'empty-desktop')}
           >
@@ -410,7 +468,6 @@ export default function App() {
               onDoubleClick={() => handleWindowAction('mycomputer', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'mycomputer')}
               className={cn(
-                "-mt-[20px] -ml-[10px]",
                 selectedIconId === 'mycomputer' ? 'bg-[#003399]/60 border border-white/20' : ''
               )}
             />
@@ -421,7 +478,6 @@ export default function App() {
               onDoubleClick={() => handleWindowAction('browser', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'browser')}
               className={cn(
-                "-mt-[40px] -ml-[10px]",
                 selectedIconId === 'browser' ? 'bg-[#003399]/60 border border-white/20' : ''
               )}
             />
@@ -432,7 +488,6 @@ export default function App() {
               onDoubleClick={() => handleWindowAction('about', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'about')}
               className={cn(
-                "-mt-[55px] -ml-[10px] pl-[3px]",
                 selectedIconId === 'about' ? 'bg-[#003399]/60 border border-white/20' : ''
               )}
             />
@@ -443,7 +498,6 @@ export default function App() {
               onDoubleClick={() => handleWindowAction('projects', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'projects')}
               className={cn(
-                "-mt-[70px] -ml-[10px] pl-[1px] pt-0",
                 selectedIconId === 'projects' ? 'bg-[#003399]/60 border border-white/20' : ''
               )}
             />
@@ -454,7 +508,6 @@ export default function App() {
               onDoubleClick={() => handleWindowAction('skills', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'skills')}
               className={cn(
-                "-mt-[92px] -ml-[10px] pl-[1px]",
                 selectedIconId === 'skills' ? 'bg-[#003399]/60 border border-white/20' : ''
               )}
             />
@@ -465,7 +518,6 @@ export default function App() {
               onDoubleClick={() => handleWindowAction('resume', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'resume')}
               className={cn(
-                "-mt-[114px] -ml-[10px] pl-0",
                 selectedIconId === 'resume' ? 'bg-[#003399]/60 border border-white/20' : ''
               )}
             />
@@ -476,7 +528,6 @@ export default function App() {
               onDoubleClick={() => handleWindowAction('contact', 'open')} 
               onContextMenu={(e) => handleContextMenu(e, 'contact')}
               className={cn(
-                "-mt-[135px] -ml-[10px] pl-0",
                 selectedIconId === 'contact' ? 'bg-[#003399]/60 border border-white/20' : ''
               )}
             />
@@ -488,10 +539,12 @@ export default function App() {
             <WindowFrame
               key={win.id}
               window={win}
+              constraintsRef={desktopRef}
               onClose={() => handleWindowAction(win.id, 'close')}
               onMinimize={() => handleWindowAction(win.id, 'minimize')}
               onMaximize={() => handleWindowAction(win.id, 'maximize')}
               onFocus={() => handleWindowAction(win.id, 'focus')}
+              onUpdate={(updates) => handleWindowAction(win.id, 'update', undefined, undefined, undefined, updates)}
             >
               {renderAppContent(win)}
             </WindowFrame>
@@ -529,7 +582,7 @@ export default function App() {
       <ContextMenu 
         isOpen={contextMenu.show}
         x={contextMenu.x}
-        y={contextMenu.y - (contextMenu.type === 'taskbar' ? 160 : 0)} // Offset for taskbar menu to appear above
+        y={contextMenu.y}
         onClose={() => setContextMenu({ ...contextMenu, show: false })}
         items={contextMenu.type === 'empty-desktop' ? [
           { 
@@ -596,7 +649,21 @@ export default function App() {
             icon: <Move size={14} />, 
             onClick: () => {
               if (contextMenu.targetAppId) {
-                setWindows(prev => prev.map(w => w.id === contextMenu.targetAppId ? { ...w, isMaximized: false, isMinimized: false } : w));
+                setWindows(prev => prev.map(w => w.id === contextMenu.targetAppId ? { ...w, isMaximized: false, isMinimized: false, position: { x: 0, y: 0 } } : w));
+              }
+            } 
+          },
+          { 
+            label: 'Default View', 
+            icon: <Maximize2 size={14} />, 
+            onClick: () => {
+              if (contextMenu.targetAppId) {
+                handleWindowAction(contextMenu.targetAppId, 'update', undefined, undefined, undefined, {
+                  isMaximized: false,
+                  isMinimized: false,
+                  position: undefined,
+                  size: undefined
+                });
               }
             } 
           },

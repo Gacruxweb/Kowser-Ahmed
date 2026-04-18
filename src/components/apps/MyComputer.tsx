@@ -38,6 +38,7 @@ import { AppMenuBar } from '../AppMenuBar';
 import { WindowType } from '@/src/types';
 import { projects } from '@/src/projectsData';
 import { SAMPLE_IMAGES } from '@/src/constants/images';
+import { SAMPLE_VIDEOS } from '@/src/constants/videos';
 
 interface FileItem {
   name: string;
@@ -274,18 +275,7 @@ export const MyComputer: React.FC<{
           { 
             name: 'Video', 
             type: 'folder', 
-            children: [
-              { name: 'Coke studio bangla- Ekla cholore', type: 'file', fileType: 'video', url: 'https://youtu.be/sMwKrxZKUSc?si=0kD9R8WnArOKgVM5' },
-              { name: 'Afreen Afreen', type: 'file', fileType: 'video', url: 'https://youtu.be/kw4tT7SCmaY?si=_E_6gZTafXl46FGe' },
-              { name: 'Game of Thrones inro', type: 'file', fileType: 'video', url: 'https://youtu.be/TZE9gVF1QbA?si=uyeAVHGa645HooRX' },
-              { name: 'Furious 7 title track', type: 'file', fileType: 'video', url: 'https://youtu.be/RgKAFK5djSk?si=KQzK9xXZGNCqeJdG' },
-              { name: 'Love me like you do', type: 'file', fileType: 'video', url: 'https://youtu.be/AJtDXIazrMo?si=xyCWAIYrjkGCeT6U' },
-              { name: 'Despacito', type: 'file', fileType: 'video', url: 'https://youtu.be/kJQP7kiw5Fk?si=95eiN2CN74Kcovi5' },
-              { name: 'Perfect- ed sheeran', type: 'file', fileType: 'video', url: 'https://youtu.be/2Vv-BfVoq4g?si=wxq8y1SrQiCHq5aN' },
-              { name: 'Broken angel', type: 'file', fileType: 'video', url: 'https://youtu.be/hbqoaJ8sKsQ?si=sJfsGGBnx_n3nXRw' },
-              { name: 'K naan - waving', type: 'file', fileType: 'video', url: 'https://youtu.be/WTJSt4wP2ME?si=NTtx2IWXLeVvou47' },
-              { name: 'Waka Waka', type: 'file', fileType: 'video', url: 'https://youtu.be/pRpeEdMmmQ0?si=RpkL4DXGXeWu2rAX' },
-            ] 
+            children: SAMPLE_VIDEOS.map(v => ({ name: v.name, type: 'file', fileType: 'video', url: v.url }))
           },
           { 
             name: 'Audio', 

@@ -9,6 +9,9 @@ export interface WindowState {
   isMaximized: boolean;
   zIndex: number;
   params?: any; // Additional parameters for the window (e.g., projectId)
+  position?: { x: number; y: number };
+  size?: { width: number | string; height: number | string };
+  snapMode?: 'none' | 'left' | 'right' | 'top';
 }
 
 export interface Project {
