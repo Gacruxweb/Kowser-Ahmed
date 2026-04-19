@@ -39,26 +39,32 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
 
   const windowVariants = {
     // 1st Version: Simple variant-based positioning
-    normal: (w: WindowState) => ({
-      left: w.position?.x ?? '50%',
-      top: w.position?.y ?? '50%',
-      width: w.size?.width ?? 840,
-      height: w.size?.height ?? 500,
-      x: w.position?.x !== undefined ? 0 : '-50%',
-      y: w.position?.y !== undefined ? 0 : '-50%',
-      opacity: 1,
-      scale: 1,
-      borderRadius: '9px',
-      transition: { 
-        type: 'spring', 
-        damping: 30, 
-        stiffness: 500, 
-        mass: 0.5,
-        // Immediate placement for primary coordinates after state sync
-        left: { duration: 0 },
-        top: { duration: 0 }
-      }
-    }),
+    normal: (w: WindowState) => {
+      const isXNumeric = typeof w.position?.x === 'number';
+      const isYNumeric = typeof w.position?.y === 'number';
+      
+      return {
+        left: w.position?.x ?? '50%',
+        top: w.position?.y ?? '50%',
+        width: w.size?.width ?? 840,
+        height: w.size?.height ?? 500,
+        x: isXNumeric ? 0 : '-50%',
+        y: isYNumeric ? 0 : '-50%',
+        opacity: 1,
+        scale: 1,
+        borderRadius: '8px',
+        transition: { 
+          type: 'spring', 
+          damping: 30, 
+          stiffness: 500, 
+          mass: 0.5,
+          left: { duration: 0 },
+          top: { duration: 0 },
+          x: { duration: 0 },
+          y: { duration: 0 }
+        }
+      };
+    },
     maximized: {
       left: 0,
       top: 0,
@@ -73,9 +79,18 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
         type: 'tween', 
         ease: "easeInOut", 
         duration: 0.2,
-        // Force these to happen simultaneously
         left: { duration: 0.2 },
         top: { duration: 0.2 }
+      }
+    },
+    minimized: {
+      opacity: 0,
+      scale: 0.5,
+      y: 100,
+      transition: {
+        type: 'spring',
+        damping: 25,
+        stiffness: 300
       }
     }
   };
@@ -145,11 +160,10 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
       
       if (isXRelative || isYRelative) {
         const parentRect = constraintsRef.current.getBoundingClientRect();
-        const taskbarHeight = 32;
-
-        // Calculate center position
-        const defaultX = Math.max(0, (parentRect.width - windowWidth) / 2);
-        const defaultY = Math.max(0, (parentRect.height - taskbarHeight - windowHeight) / 2);
+        
+        // Calculate center position relative to the constraints container
+        const defaultX = Math.round(Math.max(0, (parentRect.width - windowWidth) / 2));
+        const defaultY = Math.round(Math.max(0, (parentRect.height - windowHeight) / 2));
 
         const x = typeof win.position?.x === 'number' ? win.position.x : defaultX;
         const y = typeof win.position?.y === 'number' ? win.position.y : defaultY;
@@ -158,58 +172,19 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
     }
   }, [win.id, win.isOpen, constraintsRef, onUpdate, win.position, windowWidth, windowHeight]);
 
-  const dragBoundaries = React.useMemo(() => {
-    if (!constraintsRef?.current) return { top: 0, left: 0, right: 0, bottom: 0 };
-    
-    const parentRect = constraintsRef.current.getBoundingClientRect();
-    const taskbarHeight = 32;
-
-    // Calculate center position for fallback
-    const defaultX = (parentRect.width - windowWidth) / 2;
-    const defaultY = (parentRect.height - taskbarHeight - windowHeight) / 2;
-
-    // Current effective coordinates from state
-    const curX = typeof win.position?.x === 'number' ? win.position.x : defaultX;
-    const curY = typeof win.position?.y === 'number' ? win.position.y : defaultY;
-
-    // Framer Motion's dragConstraints (when passed as an object) 
-    // are relative to the component's original layout position (top/left).
-    // So the allowed transform offsets are:
-    return {
-      top: -curY,
-      left: -curX,
-      right: parentRect.width - curX - windowWidth,
-      bottom: parentRect.height - taskbarHeight - curY - windowHeight,
-    };
-  }, [win.position, win.size, constraintsRef, windowWidth, windowHeight]);
-
   useEffect(() => {
     const clampToViewport = () => {
-      if (!win.isOpen || win.isMaximized || !onUpdate || isResizing) return;
+      if (!win.isOpen || win.isMaximized || !onUpdate || isResizing || !constraintsRef?.current) return;
       
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      const parentRect = constraintsRef.current.getBoundingClientRect();
+      const viewportWidth = parentRect.width;
+      const viewportHeight = parentRect.height;
       
-      // Get current values or defaults
       const currentWidth = win.size?.width ?? 840;
       const currentHeight = win.size?.height ?? 500;
       
-      // Determine numeric position (converting strings/percents to pixels for clamping)
-      let currentX: number;
-      if (typeof win.position?.x === 'number') {
-        currentX = win.position.x;
-      } else {
-        // Handle 15% default
-        currentX = viewportWidth * 0.15;
-      }
-
-      let currentY: number;
-      if (typeof win.position?.y === 'number') {
-        currentY = win.position.y;
-      } else {
-        // Handle 10% default
-        currentY = viewportHeight * 0.1;
-      }
+      const currentX = typeof win.position?.x === 'number' ? win.position.x : 0;
+      const currentY = typeof win.position?.y === 'number' ? win.position.y : 0;
       
       let newX = currentX;
       let newY = currentY;
@@ -217,30 +192,26 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
       let newHeight = currentHeight;
       let needsUpdate = false;
 
-      // 1. Clamp Size: Ensure window isn't bigger than the usable screen
-      const maxWidth = viewportWidth;
-      const maxHeight = viewportHeight - 32; // Accounting for taskbar height
-
-      if (newWidth > maxWidth) {
-        newWidth = maxWidth;
+      // 1. Clamp Size: Ensure window isn't bigger than the usable workspace
+      if (newWidth > viewportWidth) {
+        newWidth = viewportWidth;
         needsUpdate = true;
       }
-      if (newHeight > maxHeight) {
-        newHeight = maxHeight;
+      if (newHeight > viewportHeight) {
+        newHeight = viewportHeight;
         needsUpdate = true;
       }
 
-      // 2. Clamp Position: Ensure window doesn't bleed off any edge
+      // 2. Clamp Position: Ensure window doesn't bleed off any edge of the workspace
       if (newX + newWidth > viewportWidth) {
         newX = Math.max(0, viewportWidth - newWidth);
         needsUpdate = true;
       }
-      if (newY + newHeight > viewportHeight - 32) {
-        newY = Math.max(0, (viewportHeight - 32) - newHeight);
+      if (newY + newHeight > viewportHeight) {
+        newY = Math.max(0, viewportHeight - newHeight);
         needsUpdate = true;
       }
 
-      // Ensure no negative coordinates
       if (newX < 0) {
         newX = 0;
         needsUpdate = true;
@@ -252,20 +223,19 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
 
       if (needsUpdate) {
         onUpdate({ 
-          position: { x: newX, y: newY },
-          size: { width: newWidth, height: newHeight }
+          position: { x: Math.round(newX), y: Math.round(newY) },
+          size: { width: Math.round(newWidth), height: Math.round(newHeight) }
         });
       }
     };
 
     window.addEventListener('resize', clampToViewport);
-    // Initial check to ensure first-time open is safe
     clampToViewport();
 
     return () => window.removeEventListener('resize', clampToViewport);
-  }, [win.isOpen, win.isMaximized, win.position, win.size, onUpdate, isResizing]);
+  }, [win.isOpen, win.isMaximized, win.position, win.size, onUpdate, isResizing, constraintsRef]);
 
-  if (!win.isOpen || win.isMinimized) return null;
+  if (!win.isOpen) return null;
 
   return (
     <motion.div
@@ -273,10 +243,12 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
       custom={win}
       variants={windowVariants}
       initial={false}
-      animate={win.isMaximized ? "maximized" : "normal"}
+      animate={win.isMinimized ? "minimized" : (win.isMaximized ? "maximized" : "normal")}
       className={cn(
-        "absolute xp-window flex flex-col shadow-2xl",
-        win.isMaximized ? "xp-window-maximized" : "border border-[#003399]"
+        "absolute xp-window flex flex-col shadow-2xl overflow-hidden",
+        win.isMaximized ? "xp-window-maximized" : "border border-[#003399]",
+        win.hideTitleBar && "border-none shadow-none bg-transparent overflow-visible",
+        win.isMinimized && "pointer-events-none select-none invisible"
       )}
       style={{ 
         zIndex: win.zIndex,
@@ -287,39 +259,35 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
       dragControls={dragControls}
       dragMomentum={false}
       dragElastic={0}
-      dragConstraints={dragBoundaries}
+      dragConstraints={constraintsRef}
       onDragEnd={(_, info) => {
-        if (!frameRef.current) return;
+        if (!frameRef.current || !constraintsRef?.current) return;
         const rect = frameRef.current.getBoundingClientRect();
+        const parentRect = constraintsRef.current.getBoundingClientRect();
         
-        // Auto-maximize if dragged to the very top edge
+        // Auto-maximize if dragged to the very top edge of the screen
         if (rect.top <= 2) {
           onMaximize();
           return;
         }
 
-        const parentRect = (constraintsRef?.current as HTMLElement)?.getBoundingClientRect() || { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
         const viewportWidth = parentRect.width;
         const viewportHeight = parentRect.height;
-        const taskbarHeight = 32;
 
         const currentWidth = rect.width;
         const currentHeight = rect.height;
 
-        // Calculate position relative to viewport/parent
+        // Calculate position relative to the workspace/parent
         let finalX = rect.left - parentRect.left;
         let finalY = rect.top - parentRect.top;
 
-        // Ultra-strict boundary clamping
-        const minX = 0;
-        const minY = 0;
+        // Final safety clamp against the workspace boundaries
         const maxX = Math.max(0, viewportWidth - currentWidth);
-        const maxY = Math.max(0, (viewportHeight - taskbarHeight) - currentHeight);
+        const maxY = Math.max(0, viewportHeight - currentHeight);
 
-        finalX = Math.round(Math.max(minX, Math.min(maxX, finalX)));
-        finalY = Math.round(Math.max(minY, Math.min(maxY, finalY)));
+        finalX = Math.round(Math.max(0, Math.min(maxX, finalX)));
+        finalY = Math.round(Math.max(0, Math.min(maxY, finalY)));
 
-        // 1st Version drag end: Basic state commitment
         onUpdate?.({ 
           position: { x: finalX, y: finalY }, 
           snapMode: 'none', 
@@ -328,60 +296,78 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
       }}
     >
       {/* Title Bar */}
-      <div 
-        className="h-8 flex items-center justify-between px-2 cursor-default select-none xp-title-bar shrink-0 active:brightness-110"
-        onPointerDown={(e) => !win.isMaximized && dragControls.start(e)}
-        onDoubleClick={onMaximize}
-      >
-        <div className="flex items-center gap-2 pointer-events-none">
-          <div className="w-4 h-4 flex items-center justify-center">
-            <WindowsLogo size={12} />
+      {!win.hideTitleBar && (
+        <div 
+          className="h-8 flex items-center justify-between px-2 cursor-default select-none xp-title-bar shrink-0 active:brightness-110"
+          onPointerDown={(e) => !win.isMaximized && dragControls.start(e)}
+          onDoubleClick={onMaximize}
+        >
+          <div className="flex items-center gap-2 pointer-events-none">
+            <div className="w-4 h-4 flex items-center justify-center">
+              <WindowsLogo size={12} />
+            </div>
+            <span className="text-xs font-bold text-white drop-shadow-sm truncate max-w-[200px] md:max-w-md">
+              {win.title}
+            </span>
           </div>
-          <span className="text-xs font-bold text-white drop-shadow-sm truncate max-w-[200px] md:max-w-md">
-            {win.title}
-          </span>
-        </div>
-        
-        <div className="flex items-center gap-1">
-          <button 
-            onClick={(e) => { e.stopPropagation(); onMinimize(); }}
-            className="w-[21px] h-[21px] flex items-center justify-center bg-[#245edb] border border-white/40 rounded-sm hover:brightness-125 active:brightness-90 shadow-sm transition-all"
-            aria-label="Minimize"
-          >
-            <Minus size={12} className="text-white stroke-[3]" />
-          </button>
           
-          <button 
-            onClick={(e) => { e.stopPropagation(); onMaximize(); }}
-            className="w-[21px] h-[21px] flex items-center justify-center bg-[#245edb] border border-white/40 rounded-sm hover:brightness-125 active:brightness-90 shadow-sm transition-all"
-            aria-label={win.isMaximized ? "Restore" : "Maximize"}
-          >
-            {win.isMaximized ? (
-              <Copy size={10} className="text-white stroke-[3]" />
-            ) : (
-              <div className="w-2.5 h-2 border-[2px] border-white" />
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={(e) => { e.stopPropagation(); onMinimize(); }}
+              className="w-[21px] h-[21px] flex items-center justify-center bg-[#245edb] border border-white/40 rounded-sm hover:brightness-125 active:brightness-90 shadow-sm transition-all"
+              aria-label="Minimize"
+            >
+              <Minus size={12} className="text-white stroke-[3]" />
+            </button>
+            
+            {!win.hideMaximize && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onMaximize(); }}
+                className="w-[21px] h-[21px] flex items-center justify-center bg-[#245edb] border border-white/40 rounded-sm hover:brightness-125 active:brightness-90 shadow-sm transition-all"
+                aria-label={win.isMaximized ? "Restore" : "Maximize"}
+              >
+                {win.isMaximized ? (
+                  <Copy size={10} className="text-white stroke-[3]" />
+                ) : (
+                  <div className="w-2.5 h-2 border-[2px] border-white" />
+                )}
+              </button>
             )}
-          </button>
 
-          <button 
-            onClick={(e) => { e.stopPropagation(); onClose(); }}
-            className="w-[21px] h-[21px] flex items-center justify-center bg-[#cc0000] border border-white/40 rounded-sm hover:bg-[#ff0000] active:bg-[#990000] shadow-sm ml-1 transition-colors"
-            aria-label="Close"
-          >
-            <X size={14} className="text-white stroke-[3]" />
-          </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); onClose(); }}
+              className="w-[21px] h-[21px] flex items-center justify-center bg-[#cc0000] border border-white/40 rounded-sm hover:bg-[#ff0000] active:bg-[#990000] shadow-sm ml-1 transition-colors"
+              aria-label="Close"
+            >
+              <X size={14} className="text-white stroke-[3]" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden bg-[#ECE9D8] relative p-[3px]">
-        <div className="w-full h-full bg-white border border-[#919B9C] overflow-auto custom-scrollbar">
-          {children}
+      <div className={cn(
+        "flex-1 overflow-hidden relative",
+        !win.hideTitleBar ? "bg-[#ECE9D8] p-[3px]" : "bg-transparent"
+      )}>
+        <div className={cn(
+          "w-full h-full overflow-auto custom-scrollbar",
+          !win.hideTitleBar ? "bg-white border border-[#919B9C]" : "bg-transparent border-none overflow-visible"
+        )}>
+          {React.isValidElement(children) 
+            ? React.cloneElement(children as React.ReactElement<any>, { 
+                onClose, 
+                onMinimize, 
+                onMaximize,
+                dragControls,
+                isMaximized: win.isMaximized
+              }) 
+            : children}
         </div>
       </div>
 
       {/* Resize Handles */}
-      {!win.isMaximized && (
+      {!win.isMaximized && !win.hideTitleBar && (
         <div className="absolute inset-0 pointer-events-none">
           <div className="pointer-events-auto absolute top-0 left-0 w-1 h-full cursor-w-resize" onMouseDown={(e) => handleResizeStart(e, 'w')} />
           <div className="pointer-events-auto absolute top-0 right-0 w-1 h-full cursor-e-resize" onMouseDown={(e) => handleResizeStart(e, 'e')} />

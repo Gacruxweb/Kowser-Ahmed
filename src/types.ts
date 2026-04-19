@@ -1,4 +1,4 @@
-export type WindowType = 'about' | 'projects' | 'skills' | 'contact' | 'settings' | 'resume' | 'mycomputer' | 'project-detail' | 'media' | 'doodledev' | 'paint' | 'pinball' | 'solitaire' | 'angrybirds' | 'redball' | 'cmd' | 'viewer' | 'browser';
+export type WindowType = 'about' | 'projects' | 'skills' | 'contact' | 'settings' | 'resume' | 'mycomputer' | 'project-detail' | 'media' | 'music' | 'doodledev' | 'paint' | 'pinball' | 'solitaire' | 'angrybirds' | 'redball' | 'cmd' | 'viewer' | 'browser';
 
 export interface WindowState {
   id: string; // Unique ID for the window instance
@@ -7,6 +7,8 @@ export interface WindowState {
   isOpen: boolean;
   isMinimized: boolean;
   isMaximized: boolean;
+  hideTitleBar?: boolean;
+  hideMaximize?: boolean;
   zIndex: number;
   params?: any; // Additional parameters for the window (e.g., projectId)
   position?: { x: number; y: number };

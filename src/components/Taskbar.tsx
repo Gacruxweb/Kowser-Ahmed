@@ -15,6 +15,8 @@ import {
   Volume2,
   FileText,
   Terminal,
+  Play,
+  Music,
   Image as ImageIcon
 } from 'lucide-react';
 
@@ -42,7 +44,8 @@ export const Taskbar: React.FC<TaskbarProps> = ({
     settings: <Settings size={16} className="text-white" />,
     mycomputer: <img src="https://icons.iconarchive.com/icons/icons-land/vista-hardware-devices/128/Computer-icon.png" alt="My Computer" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
     'project-detail': <FileText size={16} className="text-white" />,
-    media: <img src="https://icons.iconarchive.com/icons/microsoft/windows-8/128/Player-Video-icon.png" alt="Media Player" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
+    media: <div className="bg-red-600 rounded-full w-3.5 h-3.5 flex items-center justify-center"><Play size={8} className="text-white ml-0.5" fill="white" /></div>,
+    music: <div className="bg-blue-600 rounded-full w-3.5 h-3.5 flex items-center justify-center"><Music size={8} className="text-white" /></div>,
     doodledev: <Code size={16} className="text-white" />,
     paint: <img src="https://icons.iconarchive.com/icons/google/noto-emoji-activities/128/52733-artist-palette-icon.png" alt="Paint" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,
     pinball: <img src="https://icons.iconarchive.com/icons/gartoon-team/gartoon-apps/128/pinball-icon.png" alt="Pinball" className="w-4 h-4 object-contain" referrerPolicy="no-referrer" />,

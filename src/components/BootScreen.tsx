@@ -42,9 +42,10 @@ export const BootScreen: React.FC = () => {
       </div>
 
       {/* Footer Text */}
-      <div className="absolute bottom-12 left-12 text-white/80 text-xs font-medium">
+      <div className="absolute bottom-12 left-12 text-white/80 text-xs font-medium flex flex-col gap-0.5">
         <p>For the best experience</p>
         <p>Enter Full Screen (F11)</p>
+        <p className="mt-1 opacity-70">For mobile enable desktop mode in your browser.</p>
       </div>
 
       <div className="absolute bottom-12 right-12 flex flex-col items-end">

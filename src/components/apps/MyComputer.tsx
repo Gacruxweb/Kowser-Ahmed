@@ -39,6 +39,7 @@ import { WindowType } from '@/src/types';
 import { projects } from '@/src/projectsData';
 import { SAMPLE_IMAGES } from '@/src/constants/images';
 import { SAMPLE_VIDEOS } from '@/src/constants/videos';
+import { SAMPLE_SONGS } from '@/src/constants/songs';
 
 interface FileItem {
   name: string;
@@ -280,11 +281,7 @@ export const MyComputer: React.FC<{
           { 
             name: 'Audio', 
             type: 'folder', 
-            children: [
-              { name: 'Audio 1.mp3', type: 'file', fileType: 'audio', url: 'https://drive.google.com/file/d/1VrizMZOfD-ITyaNmAwMdAY24Hi-6p_8v/view?usp=sharing' },
-              { name: 'Audio 2.mp3', type: 'file', fileType: 'audio', url: 'https://drive.google.com/file/d/1K55iLPg9iUg4nQL9Lov6eAzdMslWQ5vS/view?usp=sharing' },
-              { name: 'Audio 3.mp3', type: 'file', fileType: 'audio', url: 'https://drive.google.com/file/d/1_QauqRxCWky1iqkslcPvQ1vGzQQUbzpr/view?usp=sharing' },
-            ] 
+            children: SAMPLE_SONGS.map((s, i) => ({ name: s.name, type: 'file', fileType: 'audio', url: s.url, id: i.toString() }))
           },
           { name: 'Ringtones', type: 'folder', children: [] },
           { 
@@ -356,7 +353,7 @@ export const MyComputer: React.FC<{
       } else if (item.fileType === 'video') {
          onOpenApp('media', 'media', `Media Player - ${item.name}`, { url: item.url, type: 'video' });
       } else if (item.fileType === 'audio') {
-         onOpenApp('media', 'media', `Media Player - ${item.name}`, { url: item.url, type: 'audio' });
+         onOpenApp('music', 'music', `Music Player - ${item.name}`, { url: item.url, index: item.id ? parseInt(item.id) : 0 });
       } else if (item.fileType === 'image') {
          const currentFolder = getCurrentFolder();
          const imagesInFolder = currentFolder.children?.filter(child => child.fileType === 'image') || [];

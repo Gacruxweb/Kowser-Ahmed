@@ -123,6 +123,25 @@ export const MediaPlayer: React.FC<{
     }
   };
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (mediaType !== 'embed') return;
+      
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        // YouTube API onStateChange: 0 means ended
+        if (data.event === 'onStateChange' && data.info === 0) {
+          handleNext();
+        }
+      } catch (e) {
+        // Not a JSON message or not from YouTube
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [mediaType, url, playlist]);
+
   const togglePlay = () => {
     if (mediaType === 'embed') {
       const iframe = iframeRef.current;

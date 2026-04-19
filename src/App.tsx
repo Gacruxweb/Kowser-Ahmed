@@ -16,6 +16,7 @@ import { Settings as SettingsApp } from './components/apps/Settings';
 import { MyComputer } from './components/apps/MyComputer';
 import { ProjectDetail } from './components/apps/ProjectDetail';
 import { MediaPlayer } from './components/apps/MediaPlayer';
+import { MusicPlayer } from './components/apps/MusicPlayer';
 import { DoodleDev } from './components/apps/DoodleDev';
 import { Paint } from './components/apps/Paint';
 import { CommandPrompt } from './components/apps/CommandPrompt';
@@ -58,6 +59,7 @@ export default function App() {
     { id: 'settings', type: 'settings', title: 'Settings', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     { id: 'mycomputer', type: 'mycomputer', title: 'My Computer', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     { id: 'media', type: 'media', title: 'Media Player', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    { id: 'music', type: 'music', title: 'Music Player', isOpen: false, isMinimized: false, isMaximized: false, hideTitleBar: true, hideMaximize: true, zIndex: 1, size: { width: 'auto', height: 'auto' }, position: { x: window.innerWidth / 2 - 137, y: window.innerHeight / 2 - 150 } },
     { id: 'doodledev', type: 'doodledev', title: 'DoodleDev', isOpen: false, isMinimized: false, isMaximized: true, zIndex: 1 },
     { id: 'paint', type: 'paint', title: 'Paint', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     { id: 'pinball', type: 'pinball', title: 'Pinball', isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
@@ -90,6 +92,7 @@ export default function App() {
   });
 
   const desktopRef = useRef<HTMLDivElement>(null);
+  const workspaceRef = useRef<HTMLDivElement>(null);
 
   const handleContextMenu = (e: React.MouseEvent, id: string | null, type: 'desktop' | 'taskbar' | 'empty-desktop' = 'desktop') => {
     e.preventDefault();
@@ -255,6 +258,7 @@ export default function App() {
       case 'mycomputer': return <MyComputer isMaximized={window.isMaximized} onOpenApp={onOpenApp} />;
       case 'project-detail': return <ProjectDetail projectId={window.params?.projectId} isMaximized={window.isMaximized} onClose={() => handleWindowAction(window.id, 'close')} />;
       case 'media': return <MediaPlayer isMaximized={window.isMaximized} initialUrl={window.params?.url} initialType={window.params?.type} onOpenApp={onOpenApp} />;
+      case 'music': return <MusicPlayer initialUrl={window.params?.url} initialIndex={window.params?.index} />;
       case 'viewer': return <ImageViewer images={window.params?.images} initialIndex={window.params?.initialIndex} isMaximized={window.isMaximized} />;
       case 'browser': return <Browser isMaximized={window.isMaximized} initialUrl={window.params?.url} onOpenApp={onOpenApp} />;
       case 'doodledev': return <DoodleDev isMaximized={window.isMaximized} onOpenApp={onOpenApp} />;
@@ -445,6 +449,9 @@ export default function App() {
 
       {isLoggedIn && !isBooting && !isWelcoming && (
         <div ref={desktopRef} className="fixed inset-0 overflow-hidden font-sans bg-[#003399] z-[1]">
+          {/* Workspace Boundary Ref (Screen minus taskbar) */}
+          <div ref={workspaceRef} className="fixed inset-0 bottom-[32px] pointer-events-none z-0" />
+          
           {/* Cinematic Hero Background */}
           <HeroBackground />
           
@@ -539,7 +546,7 @@ export default function App() {
             <WindowFrame
               key={win.id}
               window={win}
-              constraintsRef={desktopRef}
+              constraintsRef={workspaceRef}
               onClose={() => handleWindowAction(win.id, 'close')}
               onMinimize={() => handleWindowAction(win.id, 'minimize')}
               onMaximize={() => handleWindowAction(win.id, 'maximize')}

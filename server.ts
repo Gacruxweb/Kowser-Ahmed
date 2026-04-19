@@ -16,38 +16,53 @@ async function startServer() {
 
   app.use(express.json());
 
-  // API Route for sending email
-  app.post("/api/contact", async (req, res) => {
-    const { from, subject, message } = req.body;
+    // API Route for sending email
+    app.post("/api/contact", async (req, res) => {
+      const { from, subject, message } = req.body;
 
-    if (!from || !subject || !message) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+      if (!from || !subject || !message) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
 
-    try {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
+      const smtpUser = process.env.SMTP_USER;
+      const smtpPass = process.env.SMTP_PASS;
+      const destination = process.env.CONTACT_DESTINATION;
 
-      const mailOptions = {
-        from: `"${from}" <${process.env.SMTP_USER}>`,
-        to: process.env.CONTACT_DESTINATION,
-        subject: `Contact Form: ${subject}`,
-        text: `From: ${from}\n\nMessage:\n${message}`,
-        replyTo: from
-      };
+      if (!smtpUser || !smtpPass || !destination) {
+        console.error("Missing SMTP configuration environment variables");
+        return res.status(500).json({ error: "Server configuration error: Missing mail credentials" });
+      }
 
-      await transporter.sendMail(mailOptions);
-      res.json({ success: true, message: "Email sent successfully" });
-    } catch (error) {
-      console.error("Error sending email:", error);
-      res.status(500).json({ error: "Failed to send email" });
-    }
-  });
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+        });
+
+        const mailOptions = {
+          from: `"${from}" <${smtpUser}>`,
+          to: destination,
+          subject: `Contact Form: ${subject}`,
+          text: `From: ${from}\n\nMessage:\n${message}`,
+          replyTo: from
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.json({ success: true, message: "Sent successfully" });
+      } catch (error: any) {
+        console.error("Error sending email:", error);
+        
+        let userMessage = error.message || 'Unknown error';
+        if (userMessage.includes('535-5.7.8') || userMessage.toLowerCase().includes('invalid login')) {
+          userMessage = "Failed to sent";
+        }
+        
+        res.status(500).json({ error: userMessage });
+      }
+    });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
